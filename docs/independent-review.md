@@ -1,6 +1,6 @@
 # Independent release review — 2026-09-18
 
-Current status: OAuth-only source `8ba78e3` passes code review, build/static checks, provider-disabled guest UI and failure-path verification. Google setup has resumed after the user's Google-only clarification; Google authenticated human-testing acceptance awaits configuration evidence and a genuine round trip. Apple remains pending independently. Email/password acceptance below is historical. SMTP is no longer the sign-in dependency. The iOS implementation gate remains closed.
+Current status: deployed source `4e712dd` (WhatsApp application change `db02c75`, OAuth implementation `8ba78e3`) is accepted for guest/default-OFF operation after source, hosted and restored-browser verification. Google configuration is complete and enabled; authenticated human-testing acceptance still awaits the genuine first sign-in round trip, paused at the coordinator's user-confirmation step. Apple and real WhatsApp delivery remain pending independently. Email/password acceptance below is historical. SMTP is no longer the sign-in dependency. The iOS implementation gate remains closed.
 
 ## OAuth-only revision — in progress
 
@@ -21,6 +21,12 @@ Reviewed current official [Supabase PKCE documentation](https://supabase.com/doc
 Reviewed the tester's current `docs/test-results.md`: source `8ba78e3` passes build/typecheck, eight OAuth module checks and six hosted configuration/denial/guest checks. Secret scan covered 85 files including 18 static bundles with no database-password match. Deployed guest/provider-only UI, cancellation/missing/invalid callback handling and code/error URL scrubbing passed. Dialogs did not overflow at 320/390/430px. Email is disabled; at that checkpoint Google and Apple were both disabled. These findings accept the guest/error-state revision but do not prove authentication. Historical password fixtures cannot substitute for Google evidence.
 
 Google acceptance will distinguish a test-audience client from an unrestricted public audience, confirm exact callback configuration without exposing credentials, and rely on the tester's genuine provider exchange and application session evidence. No Apple success, cross-provider identity test or iOS gate will be inferred from Google success.
+
+### Google configuration accepted — round trip pending
+
+Reviewed credential-free configuration evidence from the implementation agent and coordinator: one dedicated Halal Cart web client; JavaScript origins `https://halal-cart-app.vercel.app` and `http://localhost:3000`; sole provider redirect `https://wbbnwbkpzoggffmvnqkh.supabase.co/auth/v1/callback`; production home/privacy/terms branding; scopes only `openid`, `userinfo.email`, `userinfo.profile`, with no sensitive/restricted scopes. The audience readback is **In production**, superseding the earlier External Testing checkpoint. Supabase Google is enabled with nonce checks retained; Email and Apple remain disabled. No client secret is reproduced in this review.
+
+The latest `tests/oauth-hosted-results.json` (2026-09-18T20:30:30.295Z) records Google true, Email/Apple false and 6/6 configuration/denial/guest checks passing. This independently supports provider enablement and continued password denial, not a completed identity exchange. The real first sign-in is paused at Halal Cart terms acceptance pending the coordinator's user confirmation. **Accept Google configuration only; withhold authenticated Google human-testing acceptance until the tester records a real callback/session round trip.** Apple, WhatsApp enablement and iOS remain separate unresolved gates.
 
 ## Optional WhatsApp order notifications — disabled installation approved
 
@@ -55,6 +61,10 @@ Reviewed the final WhatsApp test implementation, transaction helper, machine-rea
 Transport tests execute the actual TypeScript handlers/shared logic with mock network responses, checking signatures, configured sender boundaries and ambiguous outcomes. Repeated claims in one hosted transaction establish sequential exclusion, not true simultaneous-worker concurrency; SKIP LOCKED concurrency is source-reviewed only. Browser UI and real Meta delivery were unavailable and are not claimed. Existing OAuth configuration checks continue to report Email/Google/Apple disabled; Google setup remains a separate unresolved task.
 
 **Final WhatsApp decision:** accept the reviewed source for deployment with notifications OFF and phone collection hidden. Keep the private flag false and sender secrets absent until the documented configuration and consented Meta end-to-end gate passes. This adds a tested, disabled integration without claiming operational messaging, successful Google/Apple login, unrestricted launch or iOS acceptance.
+
+### Restored-browser deployed check
+
+Reviewed the tester's resumed production evidence for source `4e712dd0e8c7bdf63ef825d606ba0fea590d5426`, deployment `dpl_9ZhE68qMTYzodYtitrZyPpWvn9w7`: READY, home/privacy/terms/callback HTTP 200, new WhatsApp privacy text served, and repeated deployed endpoint/feature-OFF checks 7/7. Actual Chrome guest/provider-unavailable dialogs passed at 320/390/430 × 844px without horizontal overflow; Escape restored Sign-in focus and captured application errors were empty. This closes the default-OFF deployment/browser gap. Enabled checkout consent/verification and actual Meta delivery remain outside this evidence. Google sign-in is still awaiting its separate real-provider test.
 
 ## Historical email/password release assessment
 

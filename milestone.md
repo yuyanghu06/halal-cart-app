@@ -8,6 +8,15 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 
 ## Status
 
+### Browser setup resumed
+
+- User requested another retry; main Chrome computer control is now working. Apple Developer sign-in was reopened and preserved as a handoff. Meta Business opened successfully but Facebook login is signed out; both accounts await user login/2FA. Google setup continues under the existing approval.
+- Pending Vercel deployment `dpl_9ZhE68qMTYzodYtitrZyPpWvn9w7` now reports READY for `4e712dd` (application `db02c75`). Tester observed the new WhatsApp privacy disclosure at the public origin and is completing final browser smoke. Earlier initialization blocker below is historical.
+- Final public-origin smoke passed: new privacy disclosure, four routes HTTP200, seven hosted disabled-state/endpoint checks, and actual Chrome guest/dialog QA at 320/390/430×844 with no overflow or application errors. Enabled WhatsApp checkout and real delivery remain untested.
+- Dedicated Google OAuth client was created and connected privately to Supabase; dashboard readback shows Google enabled, Email and Apple disabled, and nonce checks retained. Audience is initially External Testing while branding/test-user setup completes; genuine sign-in verification remains in progress. No client secret was written to Git or chat.
+- Hosted OAuth configuration/denial checks pass 6/6 with Google on, Email/Apple off. The production Google button is enabled. First real sign-in is prepared in Chrome but awaits action-time approval for accepting Halal Cart's own Terms/Privacy policy; this is distinct from the Google setup approval already granted. Real OAuth completion is not yet claimed.
+- Google configuration is complete: one dedicated web client, exact production/localhost origins and Supabase callback, basic email/profile/openid scopes only, production branding URLs, and audience verified **In production** with no test-user restriction. Google sign-in still requires the pending genuine round-trip check before authenticated acceptance.
+
 ### WhatsApp order notifications — in progress
 
 - User requested WhatsApp Business API integration using the base Facebook account, optional customer WhatsApp numbers, and order notifications. Scope is transactional order updates, not marketing.
