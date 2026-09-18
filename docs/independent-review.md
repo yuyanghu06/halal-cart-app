@@ -1,6 +1,6 @@
 # Independent release review — 2026-09-18
 
-Status: backend and frontend source review accepted for a restricted human-testing release candidate. Functional/browser/deployed acceptance remains pending evidence; public-production release is blocked by mail delivery.
+Status: accepted for restricted human testing at https://halal-cart-app.vercel.app, deployed source `fc21d243e25d93a73c125308d47e43c8507cfc5c`. Public-production launch remains blocked by mail delivery. The iOS implementation gate is not passed.
 
 ## Backend assessment
 
@@ -20,19 +20,29 @@ The independent testing agent's final `tests/live-backend-results.json` run `qa-
 - **Auth callback errors:** persistent Auth error state is separate from directory loading, with sign-in/reset guidance. The password-update form is activated on PASSWORD_RECOVERY with a session, not an unauthenticated hash alone.
 - **Field constraints:** cuisine/category client limits now match the database's 60-character maximum.
 
-These corrections were re-read independently. No remaining concrete blocking source defect was identified at this checkpoint. Targeted browser checks are still required, especially identity switching, safe retry recovery, offline ordering and valid/invalid recovery callback behavior.
+These corrections were re-read independently. No remaining concrete blocking source defect was identified. Browser evidence verifies cross-tab identity isolation, guest quantity handoff, offline control and persistent expired-link guidance. Fault-injected lost-response and geolocation-race checks were not available in the supported browser tooling; exact retry/queue behavior is supported by source review and hosted backend tests, not a claimed browser fault-injection pass.
+
+## Final verification evidence
+
+Reviewed `docs/test-results.md` and `docs/deployment.md`, including the final HTTPS smoke and cleanup. Final production build/typecheck passed. Dependency audit reported zero production advisories; secret scan reported zero matches across 73 candidate files, including 18 browser-static files. Neither result is a guarantee against every security defect.
+
+Chrome/CUA exercised real hosted owner registration/menu/manual presence, customer pickup submission, owner fulfillment, separate community reports, sign-out and account switching. The pickup totaled $21.98 from two $10.99 items and stayed unpaid. Phone-sized 320, 390 and 430 CSS-pixel discovery views and a 320px order view had no horizontal overflow. Modal focus restoration was corrected and verified for Close/Escape; map pins gained cart/status labels and touch targets were reviewed. These are desktop Chrome viewport checks, not physical-phone certification.
+
+Final Vercel HTTPS home/privacy/terms/callback returned 200; the deployed app rendered hosted data and supported owner password sign-in, online/offline writes and sign-out without application console errors. The coordinator independently inspected the deployed page. Deployment configuration uses Next.js on `web`, the dedicated backend's two public environment values, and an exact production Auth callback allowlist. Earlier 404 deployments are excluded from acceptance.
+
+Testing cleanup removed fixture records from all five public tables, with final counts zero, and revoked fixture sessions. Two empty confirmed human-test accounts remain; their credentials are in an ignored local file with mode 0600, never this review or committed artifacts. The empty production directory is intentional and honest.
 
 ## Release dependencies and remaining evidence
 
 - **High — public signup/recovery delivery:** custom SMTP is disabled and email confirmation remains enabled. Configure a production sender and verify real signup and recovery delivery. Do not weaken verification. Until resolved, only preverified accounts can exercise authenticated human testing reliably.
-- Production build/static checks on the final source, narrow/wide mobile journeys, keyboard/forms/error states, deployed HTTPS smoke and Auth redirects must be recorded in `docs/test-results.md` before functional release acceptance.
-- A genuine recovery-session browser check is required to establish that Auth initialization/event timing opens the new-password form; generated test links can check UI behavior but cannot prove mail delivery.
+- A genuine recovery-session browser check remains unverified along with mail delivery. Before public launch, verify that an actual received link opens the new-password form and completes password reset. Expired-link guidance and reset-form navigation passed; they do not substitute for this check.
+- Real device GPS, continuous tracking, mobile soft keyboards, and browser network-fault injection were unavailable. Manual NYC fixture coordinates and desktop Chrome phone viewports were used and disclosed. These limitations are appropriate follow-up human tests, not asserted passes.
 
 ## Additional observations
 
 The map creates popup text with DOM textContent, avoiding HTML injection from cart names. Only the current published owner location is retained, including when offline; this behavior must remain disclosed in the consent UI/privacy policy. Public owner/reporter UUIDs are exposed by the documented table contract, but email/password credentials and private orders are not. Owner registration is self-asserted rather than platform verification. No sample data, payments, fees or taxes should be claimed as live functionality.
 
-Native modal uses `dialog.showModal()` rather than merely setting `open`, so browser-provided modal focus containment applies. Escape handling and an accessible title/close button are present. Browser QA must still verify Tab/Shift+Tab, focus restoration, small-screen visibility and scrolling. Owner tracking begins only with explicit button action, polls no faster than once/minute, and invalidates pending geolocation acquisition on cleanup via a generation guard; the already-issued-RPC race is addressed by the serialized presence promise. Sighting coordinates require explicit collection or manual entry, and public/unverified status is disclosed.
+Native modal uses `dialog.showModal()` rather than merely setting `open`, so browser-provided modal focus containment applies. Escape handling, explicit opener-focus restoration and an accessible title/close button are present; keyboard/modal checks are recorded by the tester. Owner tracking begins only with explicit button action, polls no faster than once/minute, and invalidates pending geolocation acquisition on cleanup via a generation guard; the already-issued-RPC race is addressed by the serialized presence promise. Sighting coordinates require explicit collection or manual entry, and public/unverified status is disclosed.
 
 Main application discards order responses when their captured user ID differs from the current session, clears private order state on identity change, and keys the owner component by identity. Cart-detail also uses identity-keyed remounts after the correction above. Navigation away from the owner view unmounts its tracking effect. Guest near-me coordinates stay in React/browser memory rather than being written to the backend. Privacy and terms explain unpaid reservations, owner-provided claims, retained locations, and unverified sightings. Controls retain visible focus indicators, labeled fields, reduced-motion CSS, and semantic native dialogs. These source findings do not replace real browser validation.
 
@@ -40,4 +50,4 @@ Deployment security headers exist; unsafe-eval was removed during implementation
 
 ## Acceptance decision
 
-Backend security/functional evidence is positive within the tested scope. Frontend code review accepts the corrected source for deployment as a restricted human-testing candidate. This does not grant production readiness or claim unrecorded functional/browser/deployment passes. Public-production acceptance and the iOS implementation gate remain blocked until the required evidence and mail delivery are resolved.
+Accept the deployed website for restricted human testing using confirmed test accounts, within the documented verification scope. Source review, hosted backend tests, core browser journeys and deployed smoke support this decision. Do not label it an unrestricted production launch: production SMTP and actual signup/recovery delivery remain blocking dependencies. The iOS implementation gate remains closed; no iOS completion or validation is claimed.

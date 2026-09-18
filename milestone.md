@@ -8,6 +8,20 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 
 ## Status
 
+### Current handoff — 2026-09-18
+
+**Ready for restricted human testing:** https://halal-cart-app.vercel.app
+
+Website source and test tools live on `web`; `main` and `ios` contain the shared backend and handoff documentation. Use `web` for local website/test commands.
+
+- Deployed application source: `fc21d24` on `web`; Vercel deployment `dpl_GfY6GLS1WPe6nCv98GsMZvadC1Nf`, Next.js preset, production branch `web`.
+- Final production build/typecheck pass; hosted backend 25/25; browser customer/owner ordering lifecycle; phone-width Chrome QA at 320/390/430; HTTPS deployed smoke and Auth URL configuration verified. Independent evaluation accepts this limited handoff. Full evidence: `docs/test-results.md`, `docs/independent-review.md`, `docs/deployment.md`.
+- Public QA records removed: all five application tables contain zero rows. Two empty disposable test accounts remain, with zero sessions; credentials only in ignored mode-0600 `tests/.env.human-testing`. Follow `docs/human-testing.md`.
+- **Production launch blocker:** custom SMTP is not configured. General public signup and genuine recovery-mail/token flows are not verified and cannot be described as ready. Keep email confirmation enabled. Configure a verified sender in the dedicated project's Auth SMTP settings, then verify signup and recovery end to end.
+- Physical-device soft keyboards/GPS and browser network-fault injection were not available; desktop Chrome at phone dimensions and live backend tests are the recorded evidence.
+- iOS implementation remains gated on website release acceptance; Android and Stripe remain excluded.
+- A requested blocker-reminder attempt could not be completed: Reminders connector did not return and native desktop app access failed with no available window. No reminder or text was created; this is not a successful-completion alert.
+
 ### Active implementation — 2026-09-18
 
 - Dedicated Supabase MCP verified with successful live `list_tables(public)` and `get_project_url` calls. Intended project confirmed; public schema initially empty.
@@ -24,26 +38,25 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 
 | Milestone | Status | Evidence / remaining work |
 | --- | --- | --- |
-| Repository linked | Verified | `origin` points to `https://github.com/yuyanghu06/halal-cart-app.git`; local `main`, `web`, and `ios` share backend base `e3ea153`. Historical `android` remains untouched. Nothing pushed yet. |
+| Repository linked | Verified | `origin` points to `https://github.com/yuyanghu06/halal-cart-app.git`; `web` pushed at `9bbf4f7`, `main` and `ios` pushed at shared backend base `e3ea153`. Remote default branch is `web`. Historical local `android` remains untouched. |
 | Discard initial implementation | Verified | Generated Swift app, Xcode project, and initial configuration moved to `/tmp/halal-cart-generated.F15m40` for recovery. No app implementation retained in workspace. |
 | Brand asset generated | Reviewed and integrated | Supplied green-and-white cart asset visually inspected and reused by website implementation. |
 | Supabase skill preparation | Installed and read | Official `supabase` and `supabase-postgres-best-practices` skills installed under `.agents/skills/`; relevant references must be loaded by assigned agents before implementation. |
 | Project-scoped MCP configuration | Verified | Dedicated project confirmed through successful live table and project URL queries on 2026-09-18. |
 | MCP browser OAuth | Verified | Previously completed OAuth now supports live project calls. |
-| Shared Supabase schema and Auth | Implemented; verification in progress | Five RLS tables and ownership-checked mutation RPCs deployed; hosted migration history matches local files. Security advisor reports zero findings. Live functional/security suite and independent review pending. Public signup/recovery blocked on custom SMTP configuration; email verification remains enabled. |
-| Website implementation | In progress | Next.js client on `web`; guest discovery, customer pickup ordering, owner menus/presence/order management. |
-| Website testing and independent evaluation | In progress | Separate testing and evaluation agents assigned. Hosted REST tests underway; browser/mobile checks follow completed UI. Must pass before iOS implementation. |
-| Website deployment | Not started | Target requested Vercel-compatible website; record real deployment URL and verification when ready. |
+| Shared Supabase schema and Auth | Backend verified; email dependency open | Five RLS tables/RPCs; security advisor zero findings; 25/25 hosted checks and independent SQL/test review passed. Public signup/recovery requires custom SMTP; email verification remains enabled. |
+| Website implementation | Implemented; source review accepted for testing | Next.js client on `web`; guest discovery, customer pickup ordering, owner menus/presence/order management. Identified retry/account/presence issues corrected. |
+| Website testing and independent evaluation | Accepted for restricted human testing | Build/typecheck, private-credential scan, guest/owner/customer journeys, identity and focus regressions, phone-width QA and final deployed smoke passed. Limits recorded above; public SMTP blocks full release acceptance. |
+| Website deployment | Verified | https://halal-cart-app.vercel.app; deployed `fc21d24`, live Supabase integration and exact Auth redirects verified. |
 | iOS implementation | Not started | Swift client consuming the verified shared backend; implementation agent required after web acceptance. |
 | iOS testing and independent evaluation | Not started | Build and manually test guest and cart-owner workflows through Xcode Simulator/computer control. |
 
 ## Next actions
 
-1. Finish website discovery/responsive styling and resolve checkout-retry and in-flight presence findings.
-2. Run production build, mobile browser/customer/owner journeys, and final independent evaluation; fix and retest failures.
-3. Push verified source and deploy the website to Vercel with public client environment values and exact Auth callback URLs. Verify deployed behavior.
-4. Resolve production email delivery before claiming general public signup/recovery readiness. Preserve verification and document any required owner action.
-5. Begin Swift iOS only after website acceptance; continue recording exact evidence and limitations here.
+1. Human-test the deployed website using the two local disposable accounts and `docs/human-testing.md`; no fictional carts are left in the directory.
+2. Configure production SMTP with a verified sender in https://supabase.com/dashboard/project/wbbnwbkpzoggffmvnqkh/auth/smtp, then verify actual signup confirmation and password recovery. Do not disable email confirmation to bypass this dependency.
+3. Complete physical-phone location/keyboard checks where needed, resolve human feedback, and grant full website acceptance only with evidence.
+4. Begin Swift iOS after that gate, using the shared backend/Auth contract. No iOS app is claimed complete.
 
 ## Known constraints and open dependencies
 

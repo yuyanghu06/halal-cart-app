@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 loadEnvFile(new URL('../.env',import.meta.url));
 const root=path.resolve(new URL('..',import.meta.url).pathname);
 const credentials=Object.entries(process.env).filter(([name,value])=>name==='SUPABASE_PASSWORD'&&value).map(([name,value])=>({name,value}));
-try { for(const user of JSON.parse(await readFile(path.join(root,'tests/.env.browser-qa'),'utf8'))) credentials.push({name:`browser fixture ${user.role} password`,value:user.password}); } catch(e) { if(e.code!=='ENOENT')throw e; }
+for(const file of ['.env.browser-qa','.env.human-testing'])try { for(const user of JSON.parse(await readFile(path.join(root,'tests',file),'utf8'))) credentials.push({name:`fixture ${user.role} password`,value:user.password}); } catch(e) { if(e.code!=='ENOENT')throw e; }
 const forbiddenNames=['SUPABASE_SERVICE_ROLE_KEY','SUPABASE_SECRET_KEY','SUPABASE_ACCESS_TOKEN'];
 for(const name of forbiddenNames)if(process.env[name])credentials.push({name,value:process.env[name]});
 assert.ok(credentials.length,'At least one non-public credential loaded for comparison');
