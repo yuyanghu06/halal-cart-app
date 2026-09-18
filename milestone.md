@@ -17,6 +17,8 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 - Dedicated Google Cloud project `halal-cart-nyc-2026` created using the base Chrome account. Consent setup prepared for Halal Cart with External audience. Required Google API Services User Data Policy agreement is unchecked, pending explicit action-time approval under computer-control rules; no OAuth client credential or working Google sign-in is claimed yet.
 - New OAuth build/typecheck, eight focused callback/return-destination tests, and secret scan passed. Independent source review accepted after browser-back retry correction. These checks do not replace live provider round trips.
 - Browser OAuth dialog and guest/callback checks passed at 320/390/430 pixels. Hosted Email provider disabled and read back; new-user signup remains enabled, anonymous sign-in disabled, existing identities/data preserved. Google and Apple remain disabled until their setup is complete.
+- Hosted OAuth configuration checks passed 6/6, including rejection of direct password sign-in and preserved guest reads. Production OAuth-only source `8ba78e3` reached READY as `dpl_9xQAp1jQuYv3PcbXsKpF4x7UL97k` at https://halal-cart-app.vercel.app. Live authenticated acceptance remains blocked by provider setup, not by SMTP.
+- Final deployed smoke passed all four routes, provider-only unavailable UI, guest browsing, and cancellation/missing/invalid callback cleanup/retry. Latest secret scan checked 85 files/18 bundles without a database-password match. Google consent tab is preserved as a browser handoff. Neither Google nor Apple login is complete; no production authenticated acceptance or iOS implementation is claimed.
 - Production acceptance and iOS remain gated on verified website OAuth integration. Email/password removal must include hosted provider settings, not just hidden forms.
 
 ### Historical email/password handoff — superseded by OAuth-only change above
@@ -63,10 +65,10 @@ Website source and test tools live on `web`; `main` and `ios` contain the shared
 
 ## Next actions
 
-1. Human-test the deployed website using the two local disposable accounts and `docs/human-testing.md`; no fictional carts are left in the directory.
-2. Configure production SMTP with a verified sender in https://supabase.com/dashboard/project/wbbnwbkpzoggffmvnqkh/auth/smtp, then verify actual signup confirmation and password recovery. Do not disable email confirmation to bypass this dependency.
-3. Complete physical-phone location/keyboard checks where needed, resolve human feedback, and grant full website acceptance only with evidence.
-4. Begin Swift iOS after that gate, using the shared backend/Auth contract. No iOS app is claimed complete.
+1. Obtain the pending Google policy/client approval, finish the prepared dedicated OAuth client, connect it to Supabase, and test a genuine production Google sign-in round trip.
+2. After user signs in to Apple Developer with an enrolled team, configure Apple identifiers/signing key and Supabase provider; test a genuine Apple sign-in. Store secrets privately and document rotation.
+3. Verify authenticated customer/owner journeys under OAuth, complete physical-phone location/keyboard checks where available, and grant website acceptance only with recorded evidence. Old password fixture credentials have been retired; existing hosted identities remain preserved.
+4. Begin Swift iOS after that gate using the shared backend/Auth contract. No iOS app is claimed complete. SMTP is no longer a release prerequisite for the removed email authentication flow.
 
 ## Known constraints and open dependencies
 

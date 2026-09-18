@@ -1,0 +1,36 @@
+{
+  "at": "2026-09-18T18:05:10.576Z",
+  "project": "wbbnwbkpzoggffmvnqkh",
+  "providers": {
+    "email": false,
+    "google": false,
+    "apple": false
+  },
+  "results": [
+    {
+      "name": "Email sign-in disabled",
+      "pass": true
+    },
+    {
+      "name": "Only Google or Apple providers enabled",
+      "pass": true
+    },
+    {
+      "name": "Hosted password endpoint rejects Email provider",
+      "pass": true
+    },
+    {
+      "name": "Account-free carts read",
+      "pass": true
+    },
+    {
+      "name": "Account-free menu_items read",
+      "pass": true
+    },
+    {
+      "name": "Account-free sightings read",
+      "pass": true
+    }
+  ],
+  "limitations": "Provider settings and API denial checks do not prove a completed OAuth round trip."
+}

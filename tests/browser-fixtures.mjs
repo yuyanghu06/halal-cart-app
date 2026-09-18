@@ -6,6 +6,10 @@ import pg from 'pg';
 loadEnvFile(new URL('../.env',import.meta.url));
 assert.equal(new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname,'wbbnwbkpzoggffmvnqkh.supabase.co');
 const file=new URL(process.argv.includes('--cleanup-human')?'./.env.human-testing':'./.env.browser-qa',import.meta.url);
+if (!process.argv.some(arg=>['--cleanup','--cleanup-human','--handoff'].includes(arg))) {
+ const settings=await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/settings`,{headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}}).then(r=>r.json());
+ if(settings.external?.email!==true){console.error('Password fixture creation is retired for OAuth-only sign-in. Use actual Google/Apple accounts; do not re-enable Email.');process.exit(2);}
+}
 const db=new pg.Client({host:'aws-0-us-west-2.pooler.supabase.com',port:5432,user:'postgres.wbbnwbkpzoggffmvnqkh',database:'postgres',password:process.env.SUPABASE_PASSWORD,ssl:{rejectUnauthorized:true,ca:await readFile(new URL('./supabase-root-ca.crt',import.meta.url),'utf8')}});
 await db.connect();
 try {

@@ -1,23 +1,23 @@
 # Human testing guide
 
-Open [Halal Cart](https://halal-cart-app.vercel.app). The production source `fc21d24` passed the recorded local/mobile and deployed smoke checks. This is a restricted human-testing candidate: general public signup and password recovery remain blocked on production email delivery.
+Open [Halal Cart](https://halal-cart-app.vercel.app). The current authentication model is **Google and Apple only**. Email/password sign-in, signup and recovery have been removed. Provider setup and a genuine OAuth round trip must pass before authenticated human testing is accepted; see `docs/test-results.md` for current evidence.
 
-Two empty test accounts are available in the local, ignored `tests/.env.human-testing` file (owner and customer). The file is readable only by the local user and is not published to GitHub or Vercel. Use those credentials to sign in while SMTP is configured. Public QA carts, menus, sightings and orders were removed; the clean directory starts empty.
+Use your own Google or Apple identity once that provider is enabled. Unavailable providers are honestly shown and cannot be clicked. There are no local password credentials for this flow. Historical fixture identities were preserved, their sessions revoked, and their obsolete local passwords removed. Public QA carts, menus, sightings and orders were removed; the directory starts empty.
 
 ## Accounts and real data
 
-Browsing does not require an account. Ordering, reporting a sighting, and managing a cart require sign-in. Use separate customer and owner accounts when testing ownership boundaries. Email confirmation must remain enabled. Public sign-up and password recovery need the mail-delivery dependency in `docs/release-acceptance.md` resolved first.
+Browsing does not require an account. Ordering, reporting a sighting, and managing a cart require Google/Apple sign-in. Use separate provider accounts when testing customer/owner isolation. Email provider must remain disabled. SMTP is no longer the signup dependency; Google/Apple credentials, consent setup and exact callback allowlists are the relevant dependencies.
 
 Automated test credentials are never committed. Development fixtures are disposable and must not be presented as real carts. An empty discovery page is expected until an owner registers or a user reports a sighting; no invented operating locations are seeded.
 
 ## Suggested walkthrough
 
 1. Open discovery without signing in. Check list/map navigation, search, online filtering, and empty states. Community reports should show their age and unverified status.
-2. Sign in as an owner. Register a cart you operate, add a menu item and price, then edit the item and toggle availability.
+2. Choose **Sign in → Continue with Google/Apple**. Complete provider sign-in in the same tab and verify the intended app view returns. Register a cart you operate, add a menu item and price, then edit the item and toggle availability.
 3. Publish a service location manually or explicitly start automatic location updates. Confirm that discovery shows its location and availability. Stop automatic updates and then go offline; orders should no longer be accepted.
 4. Bring the cart online for the test. In a separate customer session, open its menu, add items, enter a pickup name and note, and place an order. Confirm the total and the unpaid/pay-at-cart wording.
 5. In the owner session, accept the order, mark it preparing, ready, and completed. In the customer session, verify that status updates arrive. Test cancelling a separate order before owner acceptance.
-6. Verify that an unrelated signed-in account cannot see those orders or manage that cart. The automated backend suite covers direct API attempts as well.
+6. Verify that an unrelated provider account cannot see those orders or manage that cart. The historical backend suite verified direct API isolation before the OAuth-only change; current provider account-switch journeys still require a real OAuth round trip.
 7. Repeat core navigation and forms on a phone. Check keyboard visibility, readable errors, reachable buttons, and no horizontal scrolling.
 8. After testing, take the cart offline. Remove only clearly identified disposable fixtures through the test cleanup workflow; preserve real business records.
 

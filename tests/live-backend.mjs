@@ -8,6 +8,11 @@ loadEnvFile(new URL('../.env', import.meta.url));
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 assert.equal(new URL(url).hostname, 'wbbnwbkpzoggffmvnqkh.supabase.co', 'Dedicated project guard');
 const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const authSettings = await fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } }).then(r => r.json());
+if (authSettings.external?.email !== true) {
+  console.error('Historical password-fixture suite is unavailable with Email disabled. Do not enable Email to run it; use OAuth verification and preserve the historical result.');
+  process.exit(2);
+}
 const run = `qa-${Date.now()}`;
 const users = ['owner-a', 'owner-b', 'customer-a', 'customer-b'].map(role => ({ role, id: randomUUID(), email: `${run}-${role}@example.com`, password: randomBytes(24).toString('base64url') }));
 const db = new pg.Client({ host: process.env.TEST_DB_HOST || 'db.wbbnwbkpzoggffmvnqkh.supabase.co', port: Number(process.env.TEST_DB_PORT || 5432), user: process.env.TEST_DB_USER || 'postgres', database: 'postgres', password: process.env.SUPABASE_PASSWORD, ssl: { rejectUnauthorized: true, ca: await readFile(new URL('./supabase-root-ca.crt',import.meta.url),'utf8') }, connectionTimeoutMillis: 10000 });

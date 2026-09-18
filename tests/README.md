@@ -1,19 +1,23 @@
-# Hosted integration checks
+# OAuth-only verification
 
-Run `npm ci --prefix tests`, then:
+The application now supports only Google and Apple sign-in. Do not enable Email to run old fixture tests.
 
 ```sh
-TEST_DB_HOST=aws-0-us-west-2.pooler.supabase.com TEST_DB_USER=postgres.wbbnwbkpzoggffmvnqkh node tests/live-backend.mjs
+node --test tests/oauth.test.mjs
+node tests/oauth-hosted.mjs
+node tests/check-secret-exposure.mjs --require-bundle
 ```
 
-The suite reads the ignored root `.env` for `SUPABASE_PASSWORD`, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. It refuses any project other than the dedicated Halal Cart project. It creates four confirmed disposable Auth fixtures, signs them in through hosted GoTrue, tests REST/RPC authorization and behavior, then signs out and removes only those fixture IDs. `live-backend-results.json` contains credential-free results.
+`oauth.test.mjs` executes the actual `lib/oauth.ts` module in an isolated mocked browser/Auth environment. It checks return-route whitelisting, one-use callback exchange, code/error scrubbing, invalid/expired context, unavailable providers/storage, limited identity scopes and authorize-destination validation. These tests do not prove real provider login.
 
-Test-only SQL setup verifies the pooler TLS certificate using `supabase-root-ca.crt`, downloaded from the [official dashboard certificate link](https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt). No database credentials are used by the website.
+`oauth-hosted.mjs` reads the dedicated hosted project's public Auth settings and checks Email is disabled, its password endpoint rejects requests, only Google/Apple providers can be enabled, and guest discovery works. Add `--require-google` once configured. Results explicitly separate provider configuration from successful OAuth exchange.
 
-`node tests/browser-fixtures.mjs` creates two confirmed disposable browser accounts and stores their credentials in ignored `tests/.env.browser-qa` with mode 0600. Browser journeys must use these accounts and label any cart as QA. `node tests/browser-fixtures.mjs --cleanup` removes exact fixture records, sessions and accounts; run after browser sign-out. Never leave a fake online cart in public discovery.
+The secret scan compares non-public values from ignored `.env` against candidate repository files and built `.next/static`, without printing values. Run after a production build. Tests require installed root dependencies; historical SQL tools additionally use `npm ci --prefix tests`.
 
-For the authorized human-testing handoff, `node tests/browser-fixtures.mjs --handoff` removes all public fixture data and prior sessions but retains the two disposable accounts. Their credentials move to ignored mode-0600 `tests/.env.human-testing`, never a report or Git. To remove those accounts and any subsequently created test data by exact IDs, run `node tests/browser-fixtures.mjs --cleanup-human`.
+## Historical evidence
 
-Run `node tests/check-secret-exposure.mjs --require-bundle` after a production build. It compares non-public credential values against candidate repository files and production static bundles without displaying values.
+`live-backend-results.json` records 25 passing hosted security/functional checks before the OAuth-only change. It is backend evidence, not current OAuth sign-in evidence. `live-backend.mjs` and `browser-fixtures.mjs` used confirmed password fixtures and now stop before fixture creation when Email is disabled. Never re-enable Email to run them.
 
-These confirmed fixtures do not establish email delivery. Human account creation follows the website's **Sign in → Create an account** flow after production SMTP and allowed auth callback URLs are configured. Use separate owner/customer accounts; sign into the owner account, open the owner dashboard, create a cart and menu, publish a real location and go online. Sign into the customer account to place an unpaid pickup order, then switch back to the owner account to process it. Do not represent these orders as paid.
+Public fixture carts, menu items, orders and sightings were removed. Two historical identities are preserved at the coordinator's direction; their sessions were revoked. Obsolete local passwords were removed. Only IDs/roles/emails remain in ignored mode-0600 `tests/.env.historical-fixtures`; this is not a usable login credential.
+
+Test-only SQL verifies TLS using `supabase-root-ca.crt`, downloaded from the official dashboard certificate link. No database credentials are used by the website.
