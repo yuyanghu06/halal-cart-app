@@ -1,5 +1,33 @@
 # Verification results
 
+## Current change — OAuth-only, 2026-09-18
+
+The user replaced email/password authentication with Google and Apple only. **Earlier password sign-in and 25/25 backend results below are historical; they do not verify OAuth.** SMTP is no longer the current onboarding dependency. Authenticated release acceptance now depends on provider setup and a genuine OAuth round trip.
+
+Current source verification:
+
+- Read the installed Supabase skill, current changelog, official [Google](https://supabase.com/docs/guides/auth/social-login/auth-google), [Apple](https://supabase.com/docs/guides/auth/social-login/auth-apple) and [PKCE](https://supabase.com/docs/guides/auth/sessions/pkce-flow) documentation.
+- `node --test tests/oauth.test.mjs`: **8/8 pass**. Actual `lib/oauth.ts` is executed with mocked browser/Auth dependencies: safe route fields, one-use exchange, code/error scrubbing, missing/invalid/stale contexts, disabled provider/storage refusal, identity-only scopes and trusted authorization destination. This is not a real provider login.
+- Final source `8ba78e3` build/typecheck pass. Secret scan checked 85 candidate files including 18 static bundles, with no match for the database password. Obsolete fixture passwords were removed locally; hosted identities/data were preserved.
+- Actual Chrome local production checks: no email/password inputs; only Google/Apple controls, both honestly disabled while unavailable. Guest browsing remains usable.
+- Cancellation, missing-code and invalid-code callbacks scrubbed the URL back to the app origin and showed safe retry guidance without echoing provider error details. Retry reopened the provider-only dialog.
+- OAuth dialog had no horizontal overflow at 320/390/430px: dialog widths 284/354/394px, document scroll width equal to each viewport. Screenshots: `tests/screenshots/oauth-options-*.png`.
+- `node tests/oauth-hosted.mjs`: **6/6 pass** against the dedicated live project. Email is disabled, its password token endpoint rejects requests as provider-disabled, only permitted provider names can be enabled, and account-free carts/menu/sightings reads work. Actual settings: Email off, Google off, Apple off. This passes denial/configuration checks; it does not mean any login provider works.
+- Both historical fixture commands were executed after Email disable and correctly exited before creating users. Hosted accounts/data were untouched.
+
+Final deployed guest/error smoke passed on **https://halal-cart-app.vercel.app/**, source `8ba78e3`, deployment `dpl_9xQAp1jQuYv3PcbXsKpF4x7UL97k`:
+
+- HTTPS home, privacy, terms and callback routes each returned 200.
+- Real Chrome showed zero email/password inputs; Google/Apple controls were both correctly disabled and explained as unavailable. Guest directory stayed usable, with no fabricated cart data. No application console errors were captured on the normal guest/provider-options path.
+- Deployed cancellation, invalid-code and missing-code callbacks all returned to the same app origin, removed code/provider-error parameters, and displayed safe retry guidance. Screenshot: `tests/screenshots/oauth-deployed.png`.
+- Production tab left signed out on the clean guest homepage, temporary viewport reset, local test server stopped.
+
+**Current acceptance:** guest browsing, OAuth-only UI, failure paths, source checks and denial/configuration tests pass. **Authenticated human testing is blocked** because Google and Apple remain unconfigured. No genuine OAuth round trip, provider Back/BFCache return, OAuth bag handoff or cross-provider identity switch is claimed. Google setup needs action-time approval handled by the coordinator, and Apple setup is pending. Logic/source checks cover return intent and account scoping; historical password browser evidence below is context only.
+
+Historical fixture scripts stop before creating users when Email is disabled. Never re-enable Email to rerun them. Current human-testing instructions are in `docs/human-testing.md`.
+
+## Historical evidence — before OAuth-only change
+
 ## 2026-09-18 — preparation
 
 - Read project instructions and Supabase/Postgres security skills.
@@ -75,4 +103,4 @@ Production: **https://halal-cart-app.vercel.app/**, deployment source `fc21d24`.
 - Human-testing credentials exist only in ignored **`tests/.env.human-testing`**, verified mode **0600**. No passwords appear in reports or Git. Use `node tests/browser-fixtures.mjs --cleanup-human` when these accounts and their test data should be removed.
 - Temporary viewport override was reset, the production tab is signed out and retained for the user, and the testing agent's local production server was stopped. Implementation agent was asked to stop its development server.
 
-**Assessment:** ready for restricted human testing with the supplied local disposable accounts. Public onboarding/recovery email delivery remains a production-launch blocker until SMTP is configured and separately verified. Mobile evidence is desktop Chrome at phone sizes, with the GPS/network-fault limits above; it does not certify physical-device GPS or soft keyboards.
+**Historical assessment (superseded):** this password-based version was ready for restricted testing. Its local passwords have since been removed; use the OAuth-only current status above. Mobile evidence is desktop Chrome at phone sizes, not physical-device GPS or soft-keyboard certification.

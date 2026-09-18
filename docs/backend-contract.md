@@ -1,6 +1,6 @@
 # Shared hosted backend contract
 
-Project: `wbbnwbkpzoggffmvnqkh`. All writes require a permanent Supabase Auth user. Browse without sign-in; checkout and community reports require sign-in. Web uses email/password with verification; iOS shares Auth users, not browser sessions. OAuth is not enabled without provider credentials; do not advertise it. Configure web `/auth/callback` and eventual iOS deep-link in Supabase Auth redirect allowlist before enabling OAuth. Never put service-role keys in clients.
+Project: `wbbnwbkpzoggffmvnqkh`. All writes require a permanent Supabase Auth user. Browse without sign-in; checkout and community reports require sign-in. Web sign-in uses Google or Apple OAuth only. The Email provider is disabled; password, email signup, magic-link and reset UI are removed. Existing Auth identities and application data are preserved; iOS shares Auth users, not browser sessions. Provider availability is read from hosted public Auth settings and unavailable buttons remain disabled with an explicit explanation. Configure web `/auth/callback` and eventual iOS deep-link in Supabase Auth redirect allowlist before enabling OAuth. Never put service-role keys in clients.
 
 ## Read API
 
@@ -23,14 +23,20 @@ All arguments named exactly as below. UUID result fields are JSON strings. Retur
 
 Direct writes to tables are denied to all API clients. RLS protects reads; private security-definer implementations enforce ownership, limits and transitions and are exposed only through security-invoker RPC wrappers with explicit authenticated EXECUTE grants and fixed empty search_path. No user_metadata authorization.
 
-No sample carts are seeded or represented as real locations. Authentication deployment configuration and production mail delivery must be verified separately; default provider email delivery may be rate limited.
+No sample carts are seeded or represented as real locations. Authentication provider configuration and actual OAuth round trips must be verified separately; provider-disabled behavior is not successful sign-in evidence.
 
 ## Deployment verification (2026-09-18)
 
 Initial migration applied successfully using the dedicated project-scoped MCP. PostgreSQL 17.6. All five tables have RLS enabled, explicit read-only client grants; public wrappers are security invoker, private mutators validate permanent Auth identity and ownership. Security/performance advisors run after migration; independent hosted integration tests are recorded separately in docs/test-results.md.
 
-Auth dashboard inspection by coordinator: email enabled, confirmation ON, anonymous sign-in OFF, OAuth providers OFF, custom SMTP OFF. Supabase default mail only reaches project-team addresses and is limited to two emails/hour. General public signup and password recovery therefore require custom SMTP configuration; do not disable verification to bypass this dependency. Production Site URL and allowed callback URLs must match deployed web origin. Password sign-in for preverified test users remains usable for human testing.
+Current auth direction (supersedes the initial email-based test setup): Google/Apple OAuth only. Email provider disabled by explicit user request; new-user signup remains enabled for OAuth, anonymous sign-in remains off, existing accounts/data are not deleted. Google and Apple provider configuration is tracked in docs/deployment.md. SMTP is no longer a release dependency for website sign-in. Earlier password-based integration tests remain historical authorization evidence, not evidence of the current sign-in UX. Production Site URL and allowed callback URLs remain the exact deployed web origin and localhost callback.
 
 `orders.request_payload` stores the original request solely for idempotency matching and is visible only to the same RLS-authorized order participants. RPC responses omit this field. No location history is stored for owners: only their latest explicitly published cart location. User deletion and business deletion need an explicit retention/admin process because order history has restrictive foreign keys.
 
 Migration history alignment: CLI-generated local migration filenames were renamed to the actual hosted MCP migration versions (`20260918165054`, `20260918165156`) immediately after application; SQL content was preserved, schema was not reapplied. This prevents later CLI deployments from considering the migrations unapplied. The second migration revokes API-role execution of the pre-existing platform bootstrap `rls_auto_enable()` event trigger (conditional so clean environments without it remain supported). Final security advisor result: zero findings. Performance advisor shows only expected unused indexes before traffic/tests; indexes retained for FK/RLS and recent-order access patterns.
+
+## OAuth session contract
+
+The website uses `@supabase/supabase-js` PKCE with automatic callback detection disabled and an explicit, deduplicated `exchangeCodeForSession` call in `/auth/callback`. Codes and provider error parameters are removed from the address bar before rendering. Return intent is kept in same-tab session storage for at most one hour and reconstructed from the known view enum and a cart UUID; arbitrary `next` destinations are ignored. User-facing errors are generic and do not echo tokens or provider response details. Guest bag storage contains only item IDs and quantities; saved unresolved order payloads remain account-scoped.
+
+Google requests only `openid email profile`; Apple requests `name email`. Provider-verified identities feed the same Supabase Auth UUID and unchanged RLS/RPC authorization. Apple private relay email can produce a separate identity from an existing email account; do not manually merge or transfer carts/orders based solely on client-supplied email.

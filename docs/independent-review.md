@@ -1,6 +1,22 @@
 # Independent release review — 2026-09-18
 
-Status: accepted for restricted human testing at https://halal-cart-app.vercel.app, deployed source `fc21d243e25d93a73c125308d47e43c8507cfc5c`. Public-production launch remains blocked by mail delivery. The iOS implementation gate is not passed.
+Current status: OAuth-only revision under independent review. The user superseded email/password authentication with Google and Apple only. Acceptance below applies historically to `fc21d243e25d93a73c125308d47e43c8507cfc5c`, not the new authentication revision. Production readiness now depends on real provider configuration and callback verification, rather than SMTP. The iOS implementation gate remains closed.
+
+## OAuth-only revision — in progress
+
+Review scope: removal of password/signup/reset paths, PKCE callback and session handling, safe return context and guest-bag handoff, account isolation, provider cancellation/errors, accurate setup-state presentation and credential handling. Provider settings alone do not prove a successful Google or Apple sign-in.
+
+Initial source review of `lib/oauth.ts`, Supabase client configuration, the provider-only Auth modal, main initialization and guest-draft changes finds:
+
+- Password/signup/reset controls and calls are removed. Only Google/Apple provider choices exist; hosted public provider booleans govern their availability and disabled providers are labeled honestly.
+- PKCE is explicit with automatic URL detection disabled, avoiding two competing exchanges. A module promise protects one-use exchange across StrictMode effects; a full provider round trip reloads the module for a new attempt. Callback code/error data is scrubbed before rendering, and errors remain generic rather than exposing tokens.
+- Return context is reconstructed from a view allowlist and UUID cart ID, stored per tab with a one-hour age limit. No external URL or arbitrary `next` value is consumed. The authorize destination must match the dedicated Supabase origin and path.
+- Route state reads the rewritten URL even if the callback's synchronous popstate dispatch precedes listener installation. Detail mounting waits for callback/session initialization, protecting guest quantities from an initial guest-state overwrite. Guest restoration uses a readiness guard and validated quantities. Authenticated pending attempts and private fields retain identity-keyed boundaries.
+- **Fixed in source — Back/BFCache retry:** a pageshow listener now resets redirect state and refreshes provider availability, addressing disabled buttons restored after leaving the provider. The real provider/back browser regression remains dependent on an enabled provider.
+
+Reviewed current official [Supabase PKCE documentation](https://supabase.com/docs/guides/auth/sessions/pkce-flow) and [OAuth API](https://supabase.com/docs/reference/javascript/auth-signinwithoauth). Successful exchange requires the browser's original verifier; the five-minute code is single-use. Source review passes for the revised OAuth-only UI/callback implementation. Provider configuration, browser/build evidence and real successful Google/Apple round trips remain separate gates; authenticated release acceptance is not granted at this checkpoint.
+
+## Historical email/password release assessment
 
 ## Backend assessment
 
