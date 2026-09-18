@@ -22,10 +22,10 @@ Website source and test tools live on `web`; `main` and `ios` contain the shared
 - iOS implementation remains gated on website release acceptance; Android and Stripe remain excluded.
 - A requested blocker-reminder attempt could not be completed: Reminders connector did not return and native desktop app access failed with no available window. No reminder or text was created; this is not a successful-completion alert.
 
-### Active implementation — 2026-09-18
+### Implementation evidence — 2026-09-18
 
 - Dedicated Supabase MCP verified with successful live `list_tables(public)` and `get_project_url` calls. Intended project confirmed; public schema initially empty.
-- GitHub authentication and Vercel team access verified. No Halal Cart Vercel project exists yet; deployment follows validation.
+- GitHub authentication and Vercel team access verified; dedicated deployment details are recorded in `docs/deployment.md`.
 - Created and checked out `web` from the initial `main` commit. `android` remains excluded. Shared backend commits will also be retained on `main`; web source remains on `web`.
 - Backend implementation agent owns schema, migrations, security rules, and shared contract. Separate testing agent owns live tests and evidence. Website implementation agent owns Next.js source. Independent evaluation is required before acceptance.
 - `.env` is now ignored by backend agent's `.gitignore`; no credentials staged.
@@ -33,13 +33,12 @@ Website source and test tools live on `web`; `main` and `ios` contain the shared
 - Chosen checkout identity: authenticated customer account; browsing remains public. Orders remain unpaid, with payment at cart. No fees, taxes, or Stripe processing implemented.
 - Shared backend and logo committed as `e3ea153`; `main`, `ios`, and current `web` include that shared base. No iOS application has been implemented. Personal agent instructions/configuration and credentials were excluded from staging.
 - Hosted backend suite passed 25/25 checks using four genuine Auth sessions and scoped fixture cleanup; see `docs/test-results.md`. Independent SQL/test review found no backend blocker within tested scope. The full suite passed again with certificate verification enabled using the dashboard-provided CA. Production dependency audit reports zero advisories.
-- Website independent review identified refresh/navigation retry recovery as a required fix; implementation agent is addressing it before acceptance.
-- Current work is in progress, not accepted or deployed. Historical table entries below describe the handoff snapshot until superseded by verification evidence.
+- Website independent review findings were fixed and accepted within the restricted human-testing scope; production email delivery remains open.
 
 | Milestone | Status | Evidence / remaining work |
 | --- | --- | --- |
-| Repository linked | Verified | `origin` points to `https://github.com/yuyanghu06/halal-cart-app.git`; `web` pushed at `9bbf4f7`, `main` and `ios` pushed at shared backend base `e3ea153`. Remote default branch is `web`. Historical local `android` remains untouched. |
-| Discard initial implementation | Verified | Generated Swift app, Xcode project, and initial configuration moved to `/tmp/halal-cart-generated.F15m40` for recovery. No app implementation retained in workspace. |
+| Repository linked | Verified | `origin` points to `https://github.com/yuyanghu06/halal-cart-app.git`; website application source through `fc21d24` is pushed on `web`, with later handoff/test-report commits. `main` and `ios` contain shared backend base `e3ea153` plus handoff documentation. Remote default branch is `web`. Historical local `android` remains untouched. |
+| Discard initial implementation | Verified | Initial Swift prototype and Xcode project were moved to `/tmp/halal-cart-generated.F15m40`; they were not restored. The new website implementation is separate. |
 | Brand asset generated | Reviewed and integrated | Supplied green-and-white cart asset visually inspected and reused by website implementation. |
 | Supabase skill preparation | Installed and read | Official `supabase` and `supabase-postgres-best-practices` skills installed under `.agents/skills/`; relevant references must be loaded by assigned agents before implementation. |
 | Project-scoped MCP configuration | Verified | Dedicated project confirmed through successful live table and project URL queries on 2026-09-18. |
@@ -62,11 +61,12 @@ Website source and test tools live on `web`; `main` and `ios` contain the shared
 
 - `.env` is user-owned and must be preserved and excluded from Git. Its previously observed variable names include the public Supabase URL/key and a database password; do not record values here.
 - OAuth permission requests apply to the selected organization; the MCP endpoint itself is restricted to the dedicated project.
-- OAuth provider configuration, final web domain/redirects, and iOS signing details need verification during their relevant milestones.
-- No hosted schema changes, successful live application tests, website deployment, or successful iOS build are claimed.
+- Web domain and exact callbacks are verified. OAuth provider configuration and iOS signing remain future dependencies; no provider login or successful iOS build is claimed.
 - User requested notification if work needs input; do not represent blocked work as task completion.
 
-## Verified repository snapshot — 2026-09-18
+## Historical preparation snapshot — before implementation on 2026-09-18
+
+The following snapshot preserves the earlier handoff for context; the current status above supersedes it.
 
 - Workspace: `/Users/yuyang/Documents/halal-cart-app`.
 - Current branch: `ios`.
