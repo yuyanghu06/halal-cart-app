@@ -14,7 +14,7 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 
 Website source and test tools live on `web`; `main` and `ios` contain the shared backend and handoff documentation. Use `web` for local website/test commands.
 
-- Deployed application source: `fc21d24` on `web`; Vercel deployment `dpl_GfY6GLS1WPe6nCv98GsMZvadC1Nf`, Next.js preset, production branch `web`.
+- Functional smoke verified application source `fc21d24` on `web`, deployment `dpl_GfY6GLS1WPe6nCv98GsMZvadC1Nf`. Subsequent documentation-only `2d8a145` also reached production READY with unchanged application code. Next.js preset and production branch `web`; non-production builds are now skipped so shared/iOS branches do not create broken website previews.
 - Final production build/typecheck pass; hosted backend 25/25; browser customer/owner ordering lifecycle; phone-width Chrome QA at 320/390/430; HTTPS deployed smoke and Auth URL configuration verified. Independent evaluation accepts this limited handoff. Full evidence: `docs/test-results.md`, `docs/independent-review.md`, `docs/deployment.md`.
 - Public QA records removed: all five application tables contain zero rows. Two empty disposable test accounts remain, with zero sessions; credentials only in ignored mode-0600 `tests/.env.human-testing`. Follow `docs/human-testing.md`.
 - **Production launch blocker:** custom SMTP is not configured. General public signup and genuine recovery-mail/token flows are not verified and cannot be described as ready. Keep email confirmation enabled. Configure a verified sender in the dedicated project's Auth SMTP settings, then verify signup and recovery end to end.

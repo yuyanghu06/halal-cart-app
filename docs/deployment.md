@@ -29,6 +29,10 @@ Email confirmation remains enabled. OAuth remains unconfigured and is not advert
 
 Vercel reported the final deployment `READY`, target `production`, source branch `web`, and the exact source SHA above. The public alias was independently opened in Chrome and rendered the app with hosted directory data and active sign-in controls. This closes an earlier packaging failure: the repository-link tool initially chose `main` and framework `Other`, so an intermediate deployment built but returned a Vercel 404. Production tracking was corrected to `web`, framework preset to Next.js, and the final source was deployed under those settings. The earlier two deployments are not known-good rollback targets.
 
+Later documentation-only `web` commit `2d8a145` also reached production READY (`dpl_9d4sYPJJGqdet6vuS9PyzybKFpBh`) with unchanged application source. The known-good functional smoke above applies to application code through `fc21d24`; later handoff commits do not change that code.
+
+Vercel's project Ignored Build Step is set to **Only build production**, saved and read back after observing unwanted `main`/`ios` preview failures. Only `web` is the production branch. Shared backend/iOS branches intentionally have no website package and future non-production builds are skipped; historical failed previews are not release artifacts. The local development and test servers were stopped after verification.
+
 For future releases, push reviewed website changes to `web`, then verify the deployment state, public root route, hosted directory request, and authenticated critical paths. A successful build alone is not release verification. Keep shared backend migrations coordinated with `main` and the eventual iOS client.
 
 Only the dedicated Halal Cart Vercel project and dedicated Halal Cart Supabase Auth URLs were changed during website deployment. No unrelated projects, access protections, credentials, billing plans, or provider settings were modified.
