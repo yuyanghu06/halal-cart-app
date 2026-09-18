@@ -18,6 +18,7 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 - Independent source review passed the disabled-install gate after fixes for exact retry during a feature toggle, verification-link recovery, large order lists, and worker scheduling. Hosted migration/deployment/tests are in progress; source approval is not evidence of real Meta delivery.
 - Hosted migration `20260918200120` and `whatsapp-worker`/`whatsapp-webhook` are installed. Availability is false, business number null, and worker Vault secret absent; maintenance cron runs without outbound dispatch. No Meta messages have been sent.
 - Verification passed: 25/25 hosted rollback-only database-role checks, 11/11 mocked-transport handler checks, 7/7 live endpoint denial/disabled-state checks, website build/typecheck and a 97-file/18-bundle secret scan. Fixtures were rolled back. These tests do not establish genuine OAuth, real Meta delivery, concurrent-worker stress behavior, or new WhatsApp mobile-browser QA; browser control remains unavailable.
+- Reviewed website source is committed as `db02c75` on `web`; shared backend/contract is on `main` and `ios` at `2c6efd1`. Initial website push did not create a Vercel deployment despite later shared-branch hooks arriving. A documentation push is being used as one bounded retry; no project recreation or credential change is needed. Deployed website confirmation remains pending.
 
 ### OAuth-only change — in progress, 2026-09-18
 
