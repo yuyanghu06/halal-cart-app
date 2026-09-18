@@ -8,7 +8,18 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 
 ## Status
 
-### Current handoff — 2026-09-18
+### OAuth-only change — in progress, 2026-09-18
+
+- User replaced email/password authentication with Google and Apple OAuth only and authorized browser setup using the base Chrome account. The previous email/SMTP handoff below is historical, not the current release target.
+- Implementation agent owns app/provider configuration and dedicated Google Cloud OAuth setup. A paid Google Workspace subscription is not required for this sign-in integration.
+- Separate testing and evaluation agents are checking the new flows; prior password-based results do not establish OAuth readiness. Existing identities/data must be preserved.
+- Apple Developer opened in Chrome and is signed out. User sign-in/2FA and access to an enrolled developer team are prerequisites; Team ID, enabled App ID, Services ID, and signing key must then be configured. No Apple provider success is claimed.
+- Dedicated Google Cloud project `halal-cart-nyc-2026` created using the base Chrome account. Consent setup prepared for Halal Cart with External audience. Required Google API Services User Data Policy agreement is unchecked, pending explicit action-time approval under computer-control rules; no OAuth client credential or working Google sign-in is claimed yet.
+- New OAuth build/typecheck, eight focused callback/return-destination tests, and secret scan passed. Independent source review accepted after browser-back retry correction. These checks do not replace live provider round trips.
+- Browser OAuth dialog and guest/callback checks passed at 320/390/430 pixels. Hosted Email provider disabled and read back; new-user signup remains enabled, anonymous sign-in disabled, existing identities/data preserved. Google and Apple remain disabled until their setup is complete.
+- Production acceptance and iOS remain gated on verified website OAuth integration. Email/password removal must include hosted provider settings, not just hidden forms.
+
+### Historical email/password handoff — superseded by OAuth-only change above
 
 **Ready for restricted human testing:** https://halal-cart-app.vercel.app
 

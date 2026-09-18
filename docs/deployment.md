@@ -23,7 +23,7 @@ Supabase project `wbbnwbkpzoggffmvnqkh` Auth URL configuration was saved and the
 - Redirect URL: `http://localhost:3000/auth/callback`
 - Exactly two redirect URLs; no broad wildcard or unrelated preview origins.
 
-Email confirmation remains enabled. OAuth remains unconfigured and is not advertised by the app. Custom SMTP remains off; unrestricted production signup/confirmation/password-reset delivery requires a verified sender and mail provider configuration. Existing confirmed human-test accounts can use password sign-in. Do not describe default mail-provider behavior as verified broad production email delivery.
+The user subsequently replaced email authentication with Google/Apple OAuth only. The Email provider is disabled; existing accounts/data are preserved and OAuth signup remains enabled. The app offers only Google/Apple, reading live provider settings to disable unavailable providers honestly. SMTP is no longer a sign-in dependency. The original password-based smoke evidence above is historical; the OAuth revision requires separate provider round-trip verification.
 
 ## Deployment verification and recovery
 
@@ -36,3 +36,18 @@ Vercel's project Ignored Build Step is set to **Only build production**, saved a
 For future releases, push reviewed website changes to `web`, then verify the deployment state, public root route, hosted directory request, and authenticated critical paths. A successful build alone is not release verification. Keep shared backend migrations coordinated with `main` and the eventual iOS client.
 
 Only the dedicated Halal Cart Vercel project and dedicated Halal Cart Supabase Auth URLs were changed during website deployment. No unrelated projects, access protections, credentials, billing plans, or provider settings were modified.
+
+## OAuth-only revision: setup in progress
+
+Application changes remove all email/password/signup/reset flows. Browser PKCE explicitly exchanges the callback code, preserves a whitelisted local destination and guest bag quantities, handles cancellation/expired codes without echoing credentials, and supports retry after browser Back restoration. Only Supabase public connection variables are needed in Vercel; provider secrets stay in Supabase Auth configuration.
+
+Google Cloud project `halal-cart-nyc-2026` (display name **Halal Cart**, project number `648130500310`) was created in the base Chrome Google account, separate from unrelated projects. No billing or Workspace subscription was added. Consent branding is prepared with the same account as support/developer contact and an External audience, initially testing. The form is paused before the required Google API Services: User Data Policy acceptance; no OAuth client credentials exist yet. After approval, the dedicated Web application client requires:
+
+- Authorized JavaScript origins: `https://halal-cart-app.vercel.app` and `http://localhost:3000`.
+- Authorized redirect URI: `https://wbbnwbkpzoggffmvnqkh.supabase.co/auth/v1/callback` (the provider callback, distinct from the app's callback).
+- Only identity scopes: `openid`, email, profile.
+- Client ID and client secret entered only into the dedicated Supabase Google provider, then enable it; verify actual round trip. External Testing limits need explicit test-user configuration until production audience publishing is completed.
+
+Apple requires an enrolled Apple Developer team, a primary App ID with Sign in with Apple, an associated Services ID for web, Team ID, Key ID and a Sign in with Apple `.p8` signing key. Configure web domain `wbbnwbkpzoggffmvnqkh.supabase.co` and return URL `https://wbbnwbkpzoggffmvnqkh.supabase.co/auth/v1/callback`. Put the Services ID first in Supabase's allowed client IDs for web OAuth. Generate the Apple client-secret JWT privately and renew it before its maximum six-month expiry. Apple Developer access is currently signed out; no Apple credentials were supplied, created, or enabled.
+
+References: [Supabase Google setup](https://supabase.com/docs/guides/auth/social-login/auth-google), [Supabase Apple setup](https://supabase.com/docs/guides/auth/social-login/auth-apple), [PKCE callback exchange](https://supabase.com/docs/guides/auth/sessions/pkce-flow). Provider availability and end-to-end success must be recorded separately from source/build verification.

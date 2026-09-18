@@ -5,13 +5,24 @@ import { Cart, MenuItem, Order, age, money, online } from '@/lib/types';
 import { db, rpc } from '@/lib/supabase';
 import { Empty, Feedback, Spinner, useAction } from './ui';
 export default function CartDetail({ cart, back, signedIn, signIn, ordered, userId }: { userId?: string; cart: Cart; back: () => void; signedIn: boolean; signIn: () => void; ordered: () => void }) {
-  const [menu, setMenu] = useState<MenuItem[]>([]); const [loading, setLoading] = useState(true); const [quantities, setQuantities] = useState<Record<string, number>>({}); const [loadError, setLoadError] = useState(''); const action = useAction(); type Attempt = { key: string; items: { menu_item_id: string; quantity: number }[]; pickupName: string; note: string }; const mounted = useRef(true); const savedAttempt = useRef<Attempt | null>(null); const key = useRef<string | null>(null); const [pending, setPending] = useState(false); const [pickupName, setPickupName] = useState(''); const [note, setNote] = useState(''); const storageKey = userId ? `halal-cart-order:${userId}:${cart.id}` : null; const [retry, setRetry] = useState(0);
+  const [menu, setMenu] = useState<MenuItem[]>([]); const [loading, setLoading] = useState(true); const [quantities, setQuantities] = useState<Record<string, number>>({}); const [guestDraftReady, setGuestDraftReady] = useState(false); const [loadError, setLoadError] = useState(''); const action = useAction(); type Attempt = { key: string; items: { menu_item_id: string; quantity: number }[]; pickupName: string; note: string }; const mounted = useRef(true); const savedAttempt = useRef<Attempt | null>(null); const key = useRef<string | null>(null); const [pending, setPending] = useState(false); const [pickupName, setPickupName] = useState(''); const [note, setNote] = useState(''); const storageKey = userId ? `halal-cart-order:${userId}:${cart.id}` : null; const [retry, setRetry] = useState(0);
   useEffect(() => { let active = true; setLoading(true); db().from('menu_items').select('*').eq('cart_id', cart.id).order('sort_order').order('name').then(({ data, error }) => { if (!active) return; setLoading(false); if (error) setLoadError(error.message); else { setMenu(data || []); setLoadError(''); } }); return () => { active = false; }; }, [cart.id, retry]);
   const available = online(cart); const basket = menu.filter(item => quantities[item.id] > 0); const total = basket.reduce((sum, item) => sum + quantities[item.id] * item.price_cents, 0); const count = Object.values(quantities).reduce((sum, quantity) => sum + quantity, 0);
   function change(id: string, delta: number) { if (action.busy || pending) return; setQuantities(previous => ({ ...previous, [id]: Math.max(0, Math.min(20, (previous[id] || 0) + delta)) })); key.current = null; }
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
-  useEffect(() => { if (!userId) return; const guestKey = `halal-cart-guest-bag:${cart.id}`; try { const draft = sessionStorage.getItem(guestKey); if (draft) { setQuantities(JSON.parse(draft)); sessionStorage.removeItem(guestKey); } } catch { /* The bag can be rebuilt if storage is unavailable. */ } }, [cart.id, userId]);
-  useEffect(() => { if (userId) return; try { sessionStorage.setItem(`halal-cart-guest-bag:${cart.id}`, JSON.stringify(quantities)); } catch { /* Browsing does not require local persistence. */ } }, [cart.id, userId, quantities]);
+  useEffect(() => {
+    const guestKey = `halal-cart-guest-bag:${cart.id}`;
+    try {
+      const raw = sessionStorage.getItem(guestKey);
+      if (raw) {
+        const draft = JSON.parse(raw);
+        if (draft && typeof draft === 'object' && !Array.isArray(draft)) setQuantities(Object.fromEntries(Object.entries(draft).filter(([id, quantity]) => /^[0-9a-f-]{36}$/i.test(id) && typeof quantity === 'number' && Number.isInteger(quantity) && quantity >= 1 && quantity <= 20).slice(0, 20)) as Record<string, number>);
+        if (userId) sessionStorage.removeItem(guestKey);
+      }
+    } catch { /* Browsing works when no draft can be restored. */ }
+    setGuestDraftReady(true);
+  }, [cart.id, userId]);
+  useEffect(() => { if (userId || !guestDraftReady) return; try { sessionStorage.setItem(`halal-cart-guest-bag:${cart.id}`, JSON.stringify(quantities)); } catch { /* Browsing does not require local persistence. */ } }, [cart.id, userId, quantities, guestDraftReady]);
   useEffect(() => {
     if (!storageKey) return;
     try { const saved = sessionStorage.getItem(storageKey); if (!saved) return; const value = JSON.parse(saved); if (!value.key || !Array.isArray(value.items)) return; savedAttempt.current = value; key.current = value.key; setQuantities(Object.fromEntries(value.items.map((line: { menu_item_id: string; quantity: number }) => [line.menu_item_id, line.quantity]))); setPickupName(value.pickupName); setNote(value.note); setPending(true); } catch { /* A new attempt remains possible if storage is unavailable. */ }

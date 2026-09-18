@@ -17,9 +17,11 @@ Open `http://localhost:3000`. Hosted Supabase is used directly; do not start loc
 
 Import the repository's `web` branch into Vercel using the Next.js preset and repository root. Configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` for the intended environment. Never add the database password, service-role key, or secret key to a public variable or the browser.
 
-Set Supabase Auth's site URL to the deployed HTTPS origin. Add that origin's `/auth/callback` and `http://localhost:3000/auth/callback` to its redirect allowlist. Email/password accounts require confirmation. Configure production SMTP before broad signup or password-recovery testing; the default Supabase mail service is restricted. No OAuth buttons are exposed because no provider has been configured.
+Set Supabase Auth's site URL to the deployed HTTPS origin. Add that origin's `/auth/callback` and `http://localhost:3000/auth/callback` to its redirect allowlist. Sign-in is Google and Apple only; email/password, email signup, magic-link, and password-reset flows are removed. Configure each provider in Supabase before it is usable. The website reads provider availability from hosted Auth settings and visibly disables unavailable providers. See [OAuth deployment prerequisites](docs/deployment.md). No SMTP provider is needed for these social sign-in flows.
 
 ## Behavioral details
+
+- OAuth uses browser PKCE: the callback explicitly exchanges the one-use code once, removes callback parameters, restores only an allowlisted local view/cart destination, and preserves guest item quantities across the full redirect. Identity and private order state remain scoped to the Supabase account. Returning with the browser Back button resets the provider buttons for another attempt. No provider client secret belongs in the website environment.
 
 - Owner location sharing is opt-in. Automatic sharing updates about once a minute only while the owner view remains mounted; leaving the page stops updates. Browser background throttling can delay updates. Online status expires after 15 minutes without a fresh location; the last public coordinates remain visible as a last-shared location.
 - “Near me” uses browser geolocation only to sort the current cart list. Owners and community reporters can enter NYC coordinates manually.
@@ -31,6 +33,6 @@ Set Supabase Auth's site URL to the deployed HTTPS origin. Add that origin's `/a
 
 ## Verification and release notes
 
-See [test results](docs/test-results.md), [independent review](docs/independent-review.md), [human-testing guide](docs/human-testing.md), and [milestones](milestone.md). The hosted integration runner uses isolated, clearly labeled temporary records and cleans them up. Required production email infrastructure and operational limits must be assessed separately from build success.
+See [test results](docs/test-results.md), [independent review](docs/independent-review.md), [human-testing guide](docs/human-testing.md), and [milestones](milestone.md). The hosted integration runner uses isolated, clearly labeled temporary records and cleans them up. Actual Google/Apple sign-in round trips and operational limits must be verified separately from build success; disabled-provider tests are not successful OAuth evidence.
 
 Only the website is implemented here. The iOS client must consume the same Auth/backend contract after the website passes its required evaluation. Android and payment processing are out of scope.
