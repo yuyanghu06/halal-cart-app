@@ -22,3 +22,11 @@ Automated test credentials are never committed. Development fixtures are disposa
 8. After testing, take the cart offline. Remove only clearly identified disposable fixtures through the test cleanup workflow; preserve real business records.
 
 No card is charged. This release does not implement Stripe, platform fees, tax calculation, Android, or a verified-business certification process.
+
+## Optional WhatsApp order updates
+
+WhatsApp delivery is currently **off**. Normal pickup ordering does not require a phone number. Meta business setup, approved templates, server secrets, webhook verification and an explicitly opted-in test recipient are still required before real delivery can be tested. No notification has been sent or demonstrated.
+
+Once enabled, opt in during checkout with your own international-format WhatsApp number. After placing the order, open the supplied WhatsApp verification link and send its exact verification command from that same number. The code expires after 30 minutes; return to your order to renew it when eligible. No order notification may send before verification. The phone is private to notification processing and is not shared with the cart owner.
+
+Test created, ready and cancelled updates with a disposable order. Disable updates from the order, or send STOP to the business, then confirm later updates stop. Do not enter someone else's number. A failed or uncertain delivery must not change the order or imply that a message was delivered. Real recipient testing remains pending; automated transport tests use mocks only.

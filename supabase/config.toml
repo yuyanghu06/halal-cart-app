@@ -1,0 +1,4 @@
+[functions.whatsapp-worker]
+verify_jwt = false # Custom x-worker-secret authentication; never a public dispatch API.
+[functions.whatsapp-webhook]
+verify_jwt = false # Meta GET verification token and POST raw-body HMAC authentication.

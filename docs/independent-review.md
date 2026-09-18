@@ -1,6 +1,6 @@
 # Independent release review — 2026-09-18
 
-Current status: OAuth-only revision under independent review. The user superseded email/password authentication with Google and Apple only. Acceptance below applies historically to `fc21d243e25d93a73c125308d47e43c8507cfc5c`, not the new authentication revision. Production readiness now depends on real provider configuration and callback verification, rather than SMTP. The iOS implementation gate remains closed.
+Current status: OAuth-only source `8ba78e3` passes code review, build/static checks, provider-disabled guest UI and failure-path verification. Google setup has resumed after the user's Google-only clarification; Google authenticated human-testing acceptance awaits configuration evidence and a genuine round trip. Apple remains pending independently. Email/password acceptance below is historical. SMTP is no longer the sign-in dependency. The iOS implementation gate remains closed.
 
 ## OAuth-only revision — in progress
 
@@ -15,6 +15,46 @@ Initial source review of `lib/oauth.ts`, Supabase client configuration, the prov
 - **Fixed in source — Back/BFCache retry:** a pageshow listener now resets redirect state and refreshes provider availability, addressing disabled buttons restored after leaving the provider. The real provider/back browser regression remains dependent on an enabled provider.
 
 Reviewed current official [Supabase PKCE documentation](https://supabase.com/docs/guides/auth/sessions/pkce-flow) and [OAuth API](https://supabase.com/docs/reference/javascript/auth-signinwithoauth). Successful exchange requires the browser's original verifier; the five-minute code is single-use. Source review passes for the revised OAuth-only UI/callback implementation. Provider configuration, browser/build evidence and real successful Google/Apple round trips remain separate gates; authenticated release acceptance is not granted at this checkpoint.
+
+### OAuth revision verification checkpoint
+
+Reviewed the tester's current `docs/test-results.md`: source `8ba78e3` passes build/typecheck, eight OAuth module checks and six hosted configuration/denial/guest checks. Secret scan covered 85 files including 18 static bundles with no database-password match. Deployed guest/provider-only UI, cancellation/missing/invalid callback handling and code/error URL scrubbing passed. Dialogs did not overflow at 320/390/430px. Email is disabled; at that checkpoint Google and Apple were both disabled. These findings accept the guest/error-state revision but do not prove authentication. Historical password fixtures cannot substitute for Google evidence.
+
+Google acceptance will distinguish a test-audience client from an unrestricted public audience, confirm exact callback configuration without exposing credentials, and rely on the tester's genuine provider exchange and application session evidence. No Apple success, cross-provider identity test or iOS gate will be inferred from Google success.
+
+## Optional WhatsApp order notifications — disabled installation approved
+
+The user additionally requested Meta/WhatsApp Send API integration for optional customer phone numbers and order notifications. Reviewed private phone/consent storage, explicit opt-in and withdrawal/STOP suppression, service-only outbox access, atomic event deduplication, worker concurrency and finite retries, ambiguous provider response handling, approved utility templates, webhook signatures and secrets, and disabled availability until real credentials/template delivery exist. Google authentication acceptance remains a separate decision.
+
+Read the installed Supabase/Postgres skills and queue-lock/short-transaction references. Current [WhatsApp Business Messaging Policy](https://business.whatsapp.com/policy) requires recipient phone/permission, honoring opt-outs, and approved templates for initiated conversations. A queued event or accepted API response is not delivered/read evidence. Implementation review has passed for disabled installation; real messaging configuration and delivery remain unverified.
+
+### Historical findings from the initial migration review — resolved below
+
+The initial draft was named `20260918195234_whatsapp_notifications.sql`; the final file is aligned to hosted version `20260918200120_whatsapp_notifications.sql`, without reapplying its SQL. Initial findings requested explicit customer withdrawal and invalidation, service-role schema usage for private wrappers, latest-order/consent checks before sending, null phone/status timestamp handling, consistent message-ID/opaque-event reconciliation, and durable inbound message deduplication so a replayed STOP cannot revoke later fresh opt-in. Those findings are resolved in the reviewed final migration.
+
+First coherent implementation re-review confirms those initial SQL fixes are present. Service access uses private definer/public invoker wrappers with explicit grants; webhook POST verifies raw-body HMAC and configured WABA/sender IDs before processing; verification binds to the actual incoming phone; 30-day inbound message deduplication prevents ordinary replayed STOP effects. Worker holds unknown/timeout/5xx outcomes for reconciliation rather than blind resends, and retries explicit 429 responses at most four claims. No phone or token is placed in public order rows, owner UI, provider logs or message content.
+
+**Resolved blocking retry defect:** the draft checked availability before order idempotency, so a lost-response committed order could become unrecoverable when notifications were disabled before retry. The final implementation resolves matching existing requests while disabled without new consent/challenges and rejects brand-new disabled attempts atomically. Verification-link recovery, refreshed consent display, truthful paused state, privacy disclosures and scheduler corrections also passed re-review.
+
+### Final source gate — approved for installed-but-disabled operation
+
+Re-read the corrections: matching saved orders now resolve even when notifications turn off, while new disabled attempts reject before creation. Customers can regenerate verification links after navigation/expiry and withdraw their own order's consent. State reads batch all order IDs in chunks of 100, refresh on focus/visibility, and report feature-disabled subscriptions as paused. Saved unresolved checkout restores and discloses its phone/opt-in details, remaining keyed to the account. Privacy text documents Meta sharing, retention, STOP and the possibility that a message already in flight can arrive.
+
+The cron tick performs retention cleanup independently of delivery, and sends no worker request unless the feature flag and a separately provisioned Vault secret exist. Its fixed dedicated-project endpoint uses a 10-second initiation timeout. The worker authenticates its secret, returns 202, and uses EdgeRuntime.waitUntil for a maximum three-job dispatch; external calls have finite timeouts. This addresses the original one-second scheduler/awaited-batch mismatch. Runtime/grant/advisor and hosted semantics verification must follow installation.
+
+**Independent gate decision:** approve applying this additive migration and deploying the reviewed functions with `enabled=false` and no live sender secret provisioning, then running hosted tests. No blocking source issue remains for disabled installation. This is not approval to advertise working WhatsApp delivery: actual Meta credentials, configured sender, approved utility templates, verified webhook and a consented end-to-end delivery test remain required before enablement. No message delivery, Google sign-in or Apple sign-in is inferred from this approval.
+
+### Hosted installation checkpoint
+
+Reviewed deployment readback: hosted migration `20260918200120`, worker/webhook version 1 ACTIVE with custom authentication, availability `{enabled:false,business_number:null}`, zero Vault worker-secret records, and an active minute cron performing maintenance only. No Meta sender secrets are provisioned. Advisor no-policy INFO notices on private RLS tables reflect intentional direct-access denial; the pre-existing leaked-password warning concerns the disabled Email provider. The final hosted/build evidence below completes the disabled frontend deployment gate.
+
+### Final disabled-release evidence and decision
+
+Reviewed the final WhatsApp test implementation, transaction helper, machine-readable results (2026-09-18T20:05:33.513Z) and `docs/test-results.md`: **25/25 hosted semantics checks, 11/11 handler/transport checks, 7/7 deployed endpoint denial/disabled-availability checks, production build and typecheck pass**. Secret comparison scanned 97 files including 18 static bundles with zero database-password matches; no Meta secrets exist to scan. Hosted tests use the actual dedicated database with certificate-verified TLS, application database roles and synthetic identity claims inside a rollback-only transaction. Fixtures and temporary feature enablement never commit, so this is database authorization/behavior evidence, not Google authentication or customer message delivery. Tests cover private access, disabled-order rejection, saved retry while disabled, token ownership/expiry/renewal, STOP replay and fresh reconsent, withdrawal and stale-state authorization checks, bounded retries, unknown holds and status reconciliation.
+
+Transport tests execute the actual TypeScript handlers/shared logic with mock network responses, checking signatures, configured sender boundaries and ambiguous outcomes. Repeated claims in one hosted transaction establish sequential exclusion, not true simultaneous-worker concurrency; SKIP LOCKED concurrency is source-reviewed only. Browser UI and real Meta delivery were unavailable and are not claimed. Existing OAuth configuration checks continue to report Email/Google/Apple disabled; Google setup remains a separate unresolved task.
+
+**Final WhatsApp decision:** accept the reviewed source for deployment with notifications OFF and phone collection hidden. Keep the private flag false and sender secrets absent until the documented configuration and consented Meta end-to-end gate passes. This adds a tested, disabled integration without claiming operational messaging, successful Google/Apple login, unrestricted launch or iOS acceptance.
 
 ## Historical email/password release assessment
 
@@ -64,6 +104,6 @@ Main application discards order responses when their captured user ID differs fr
 
 Deployment security headers exist; unsafe-eval was removed during implementation review. CSP still permits unsafe-inline scripts, a defense-in-depth limitation rather than evidence of an injection flaw. The database supports no account/business deletion flow because retained-order foreign keys require an explicit retention/admin process; that limitation is documented in the contract and privacy page.
 
-## Acceptance decision
+## Historical acceptance decision — superseded
 
 Accept the deployed website for restricted human testing using confirmed test accounts, within the documented verification scope. Source review, hosted backend tests, core browser journeys and deployed smoke support this decision. Do not label it an unrestricted production launch: production SMTP and actual signup/recovery delivery remain blocking dependencies. The iOS implementation gate remains closed; no iOS completion or validation is claimed.
