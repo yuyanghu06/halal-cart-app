@@ -1,0 +1,107 @@
+{
+  "run": "qa-1789750613704",
+  "at": "2026-09-18T16:57:06.541Z",
+  "project": "wbbnwbkpzoggffmvnqkh",
+  "results": [
+    {
+      "label": "owner creates own cart and menu",
+      "pass": true
+    },
+    {
+      "label": "second owner creates independent cart and menu",
+      "pass": true
+    },
+    {
+      "label": "guest reads public carts and menu",
+      "pass": true
+    },
+    {
+      "label": "guest mutations denied",
+      "pass": true
+    },
+    {
+      "label": "cross-owner menu creation/edit and presence denied",
+      "pass": true
+    },
+    {
+      "label": "direct table insert/update/delete denied",
+      "pass": true
+    },
+    {
+      "label": "offline cart rejects order",
+      "pass": true
+    },
+    {
+      "label": "invalid coordinates rejected",
+      "pass": true
+    },
+    {
+      "label": "owner explicitly publishes NYC presence",
+      "pass": true
+    },
+    {
+      "label": "invalid quantities and mixed-cart items rejected",
+      "pass": true
+    },
+    {
+      "label": "server trusted price and unpaid status",
+      "pass": true
+    },
+    {
+      "label": "retry idempotency and concurrent duplicate submission",
+      "pass": true
+    },
+    {
+      "label": "concurrent first submissions create one order",
+      "pass": true
+    },
+    {
+      "label": "idempotency key rejects changed payload",
+      "pass": true
+    },
+    {
+      "label": "orders and items isolated to customer and relevant owner",
+      "pass": true
+    },
+    {
+      "label": "unauthorized transitions and state skips rejected",
+      "pass": true
+    },
+    {
+      "label": "owner fulfills order through valid lifecycle",
+      "pass": true
+    },
+    {
+      "label": "customer can cancel own pending order only",
+      "pass": true
+    },
+    {
+      "label": "unavailable items rejected",
+      "pass": true
+    },
+    {
+      "label": "stale online cart rejects order",
+      "pass": true
+    },
+    {
+      "label": "signed-in community sighting remains separate from cart presence",
+      "pass": true
+    },
+    {
+      "label": "anonymous and invalid sightings denied",
+      "pass": true
+    },
+    {
+      "label": "sighting write rate limit enforced",
+      "pass": true
+    },
+    {
+      "label": "order write rate limit enforced",
+      "pass": true
+    },
+    {
+      "label": "malformed access token cannot mutate",
+      "pass": true
+    }
+  ]
+}

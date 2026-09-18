@@ -11,3 +11,9 @@ coverage/
 playwright-report/
 test-results/
 supabase/.temp/
+
+# Personal agent setup must not be published with this public application.
+.agents/
+.codex/
+AGENTS.md
+skills-lock.json

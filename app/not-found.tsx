@@ -1,0 +1,1 @@
+export default function NotFound() { return <main className="legal"><a href="/" className="brand">Halal Cart</a><h1>This corner is off the map.</h1><p>We couldn’t find that page.</p><a className="button primary" href="/">Find a cart</a></main>; }
