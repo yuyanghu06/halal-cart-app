@@ -8,6 +8,17 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 
 ## Status
 
+### WhatsApp order notifications — in progress
+
+- User requested WhatsApp Business API integration using the base Facebook account, optional customer WhatsApp numbers, and order notifications. Scope is transactional order updates, not marketing.
+- Primary coordinates a backend integration with explicit opt-in, private recipient data, recipient verification, server-held Meta credentials, queued order events, authenticated dispatch, signed delivery/opt-out webhooks, and honest disabled behavior until provider setup is complete. Implementation, testing, and evaluation remain separate.
+- Computer control currently reports no connected Chrome browser, preventing the requested Apple tab reopening and Google/Facebook dashboard setup. User was asked to reconnect main Chrome. Google approval persists; Apple sign-in has not been completed.
+- A business sending number is required; user was asked whether an existing Meta number or a dedicated new number is available. No personal saved number is assumed and no real WhatsApp messages have been sent.
+- Implemented source includes private per-order consent, number-bound verification challenges, order-confirmed/ready/cancelled event queue, signed Meta webhook and authenticated background worker, customer withdrawal/STOP, bounded retry and unknown-outcome handling, and privacy/retention documentation. Delivery stays off and checkout hides phone collection while unavailable.
+- Independent source review passed the disabled-install gate after fixes for exact retry during a feature toggle, verification-link recovery, large order lists, and worker scheduling. Hosted migration/deployment/tests are in progress; source approval is not evidence of real Meta delivery.
+- Hosted migration `20260918200120` and `whatsapp-worker`/`whatsapp-webhook` are installed. Availability is false, business number null, and worker Vault secret absent; maintenance cron runs without outbound dispatch. No Meta messages have been sent.
+- Verification passed: 25/25 hosted rollback-only database-role checks, 11/11 mocked-transport handler checks, 7/7 live endpoint denial/disabled-state checks, website build/typecheck and a 97-file/18-bundle secret scan. Fixtures were rolled back. These tests do not establish genuine OAuth, real Meta delivery, concurrent-worker stress behavior, or new WhatsApp mobile-browser QA; browser control remains unavailable.
+
 ### OAuth-only change — in progress, 2026-09-18
 
 - User replaced email/password authentication with Google and Apple OAuth only and authorized browser setup using the base Chrome account. The previous email/SMTP handoff below is historical, not the current release target.
@@ -15,6 +26,7 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 - Separate testing and evaluation agents are checking the new flows; prior password-based results do not establish OAuth readiness. Existing identities/data must be preserved.
 - Apple Developer opened in Chrome and is signed out. User sign-in/2FA and access to an enrolled developer team are prerequisites; Team ID, enabled App ID, Services ID, and signing key must then be configured. No Apple provider success is claimed.
 - Dedicated Google Cloud project `halal-cart-nyc-2026` created using the base Chrome account. Consent setup prepared for Halal Cart with External audience. Required Google API Services User Data Policy agreement is unchecked, pending explicit action-time approval under computer-control rules; no OAuth client credential or working Google sign-in is claimed yet.
+- User subsequently replied "done" and clarified "for google not for apple". Google setup resumed with that approval/completion signal; implementation agent is inspecting current browser state and connecting the dedicated client. Apple remains pending, with no new Apple action authorized by this reply.
 - New OAuth build/typecheck, eight focused callback/return-destination tests, and secret scan passed. Independent source review accepted after browser-back retry correction. These checks do not replace live provider round trips.
 - Browser OAuth dialog and guest/callback checks passed at 320/390/430 pixels. Hosted Email provider disabled and read back; new-user signup remains enabled, anonymous sign-in disabled, existing identities/data preserved. Google and Apple remain disabled until their setup is complete.
 - Hosted OAuth configuration checks passed 6/6, including rejection of direct password sign-in and preserved guest reads. Production OAuth-only source `8ba78e3` reached READY as `dpl_9xQAp1jQuYv3PcbXsKpF4x7UL97k` at https://halal-cart-app.vercel.app. Live authenticated acceptance remains blocked by provider setup, not by SMTP.

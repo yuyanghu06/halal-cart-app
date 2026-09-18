@@ -1,5 +1,18 @@
 # Verification results
 
+## Current addition — optional WhatsApp notifications, 2026-09-18
+
+Backend migration `20260918200120` and both Edge Functions are installed in the dedicated hosted project with delivery **off**. New frontend source builds successfully; final deployment is coordinated separately. This verifies disabled installation and notification logic, not real Meta delivery or authenticated browser acceptance.
+
+- `npm run build` and `npm run typecheck`: pass on final WhatsApp source. OAuth regression tests: **8/8 unit** and **6/6 hosted** pass; Email, Google and Apple remain disabled.
+- `node --test tests/whatsapp.test.mjs`: **11/11 pass** executing actual TypeScript shared code and request handlers with mocked transport/environment. Covers raw-body HMAC tampering, business/phone binding, malformed events, minimal templates, unverified/withdrawn suppression, definitive throttling versus uncertain outcomes, three-job batch limit, webhook verification/auth and worker authentication. No real message sent.
+- `node tests/whatsapp-http.mjs`: **7/7 pass** on deployed hosted endpoints: missing/incorrect worker secret, unsupported methods, unsigned webhook and wrong verification token reject; public availability returns disabled with no business number.
+- `node tests/whatsapp-hosted.mjs`: **25/25 pass** against the live hosted migration. Covers private phone/consent grants, owner/stranger isolation, explicit valid consent, same-key retry while disabled, fresh disabled-request rejection, challenge renewal/hash/exact sender/expiry/replay, created/ready/cancelled event behavior, post-claim cancellation and withdrawal suppression, STOP and deduplicated old STOP after new opt-in, bounded retries, unknown-outcome handling, monotonic statuses and expired leases. Result details: `tests/whatsapp-hosted-results.json`.
+- Hosted role tests use TLS certificate validation, synthetic authenticated/service-role claims and reserved fictional phone numbers inside one transaction that always rolls back. These test database authorization and behavior; they are not genuine OAuth sessions. Repeated claims verify exclusive sequential selection; actual concurrent workers were not exercised.
+- Secret comparison scan: **97 files including 18 production static bundles**, no database-password matches. No WhatsApp secrets have been provisioned. A separate live read observed delivery disabled and zero QA transaction users/carts, private consents and outbox rows outside the test transaction.
+
+**Limits:** Chrome Control native connection remains unavailable, so no new WhatsApp checkout visuals or mobile interaction evidence is claimed. Meta business credentials, templates, webhook setup and an explicitly opted-in recipient remain pending; real created/ready/cancelled deliveries and STOP replies are unverified. Do not enable delivery based only on mocked tests. Google setup and its genuine OAuth round trip remain blocked by the browser connection; Apple remains pending. Earlier mobile screenshots and password journeys below are historical and do not establish these new flows.
+
 ## Current change — OAuth-only, 2026-09-18
 
 The user replaced email/password authentication with Google and Apple only. **Earlier password sign-in and 25/25 backend results below are historical; they do not verify OAuth.** SMTP is no longer the current onboarding dependency. Authenticated release acceptance now depends on provider setup and a genuine OAuth round trip.
@@ -22,7 +35,7 @@ Final deployed guest/error smoke passed on **https://halal-cart-app.vercel.app/*
 - Deployed cancellation, invalid-code and missing-code callbacks all returned to the same app origin, removed code/provider-error parameters, and displayed safe retry guidance. Screenshot: `tests/screenshots/oauth-deployed.png`.
 - Production tab left signed out on the clean guest homepage, temporary viewport reset, local test server stopped.
 
-**Current acceptance:** guest browsing, OAuth-only UI, failure paths, source checks and denial/configuration tests pass. **Authenticated human testing is blocked** because Google and Apple remain unconfigured. No genuine OAuth round trip, provider Back/BFCache return, OAuth bag handoff or cross-provider identity switch is claimed. Google setup needs action-time approval handled by the coordinator, and Apple setup is pending. Logic/source checks cover return intent and account scoping; historical password browser evidence below is context only.
+**Current acceptance:** guest browsing, OAuth-only UI, failure paths, source checks and denial/configuration tests pass. **Authenticated human testing is blocked** because Google and Apple remain unconfigured. No genuine OAuth round trip, provider Back/BFCache return, OAuth bag handoff or cross-provider identity switch is claimed. The user approved the Google setup checkpoint; completing provider configuration and testing is now blocked by the unavailable Chrome Control connection. Apple setup is pending. Logic/source checks cover return intent and account scoping; historical password browser evidence below is context only.
 
 Historical fixture scripts stop before creating users when Email is disabled. Never re-enable Email to rerun them. Current human-testing instructions are in `docs/human-testing.md`.
 

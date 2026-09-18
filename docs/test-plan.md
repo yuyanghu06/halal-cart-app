@@ -1,5 +1,13 @@
 # Website acceptance and hosted integration plan
 
+## Current additions — OAuth and optional WhatsApp
+
+OAuth-only: Email must remain disabled. Confirm Google provider configuration and complete a real production OAuth round trip before accepting authenticated human testing; Apple stays visibly unavailable until separately configured. Test callback cancellation, missing/invalid code, safe app-only return context, same-tab PKCE, guest bag handoff, private state clearing and sign-out. Existing password-backed tests are historical and must not trigger Email re-enablement.
+
+WhatsApp: optional contact/consent must not block ordinary pickup ordering. A submitted phone alone is not proof of control: only an unexpired, order/account-bound activation challenge arriving from the exact submitted E.164 sender may activate notifications. Test mismatches, expiry, replay, duplicate inbound events, STOP suppression, explicit revocation, and no delivery without consent/verification. Phone/challenge data must stay private from guest and cart-owner reads. Test created/ready/cancelled event uniqueness, worker authorization and claims, bounded retry of definitive throttling, and no blind retry of ambiguous sends. Signed webhook HMAC must bind the raw request body; malformed or unsigned events must fail closed.
+
+Use hosted PostgreSQL role/claims fixtures inside transactions that are always rolled back for new database authorization tests while OAuth is unavailable. This verifies database roles, not a real OAuth session. Worker/webhook transport tests must mock Meta; no real WhatsApp send without an explicitly identified opted-in recipient. Never infer consent or reuse a saved personal phone number. Final live delivery remains separately unverified until provider configuration, approved templates and an authorized recipient are available.
+
 Status: planned, 2026-09-18. Target only hosted Supabase project `wbbnwbkpzoggffmvnqkh`. No local Supabase or Docker. Tests use disposable, clearly prefixed records; cleanup removes only records created by this suite.
 
 ## Backend acceptance

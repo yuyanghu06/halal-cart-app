@@ -1,0 +1,107 @@
+{
+  "at": "2026-09-18T20:05:33.513Z",
+  "project": "wbbnwbkpzoggffmvnqkh",
+  "mode": "Hosted transaction with database roles and synthetic claims; all fixtures rolled back; no real Auth login or message send",
+  "results": [
+    {
+      "name": "plain pickup order does not create notification consent or outbox",
+      "pass": true
+    },
+    {
+      "name": "disabled WhatsApp rejects opt-in order without creating it",
+      "pass": true
+    },
+    {
+      "name": "invalid phone and missing or stale consent are rejected",
+      "pass": true
+    },
+    {
+      "name": "opt-in stores phone privately and returns an activation challenge",
+      "pass": true
+    },
+    {
+      "name": "committed notification retry succeeds while feature off without minting a challenge",
+      "pass": true
+    },
+    {
+      "name": "private consent and outbox denied to guests, owner, customer and stranger",
+      "pass": true
+    },
+    {
+      "name": "service mutation API denied to anon and authenticated identities",
+      "pass": true
+    },
+    {
+      "name": "notification retry is unique and different phone rejected",
+      "pass": true
+    },
+    {
+      "name": "unverified consent cannot be claimed or authorized for sending",
+      "pass": true
+    },
+    {
+      "name": "verification renewal is customer-only and invalidates prior challenge",
+      "pass": true
+    },
+    {
+      "name": "wrong sender cannot activate another phone challenge",
+      "pass": true
+    },
+    {
+      "name": "expired activation challenge rejected",
+      "pass": true
+    },
+    {
+      "name": "exact sender activates consent once and invalidates the challenge",
+      "pass": true
+    },
+    {
+      "name": "worker claim is exclusive and reveals phone only at authorized send",
+      "pass": true
+    },
+    {
+      "name": "ambiguous send outcome cannot be blindly reclaimed",
+      "pass": true
+    },
+    {
+      "name": "status callback resolves uncertain send and is monotonic/idempotent",
+      "pass": true
+    },
+    {
+      "name": "ready event enqueued once through valid owner transitions",
+      "pass": true
+    },
+    {
+      "name": "definitive retry backoff is bounded to four attempts",
+      "pass": true
+    },
+    {
+      "name": "authorize suppresses claimed event after order state changes",
+      "pass": true
+    },
+    {
+      "name": "authorize suppresses in-flight notification after consent withdrawal",
+      "pass": true
+    },
+    {
+      "name": "STOP withdraws consent and suppresses other pending order notifications",
+      "pass": true
+    },
+    {
+      "name": "late activation replay cannot undo STOP",
+      "pass": true
+    },
+    {
+      "name": "duplicate old STOP cannot revoke a subsequently verified opt-in",
+      "pass": true
+    },
+    {
+      "name": "only the customer may inspect or withdraw their notification consent",
+      "pass": true
+    },
+    {
+      "name": "stale sending lease becomes unknown, not queued",
+      "pass": true
+    }
+  ]
+}
