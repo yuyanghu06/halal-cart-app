@@ -19,6 +19,7 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 - Hosted migration `20260918200120` and `whatsapp-worker`/`whatsapp-webhook` are installed. Availability is false, business number null, and worker Vault secret absent; maintenance cron runs without outbound dispatch. No Meta messages have been sent.
 - Verification passed: 25/25 hosted rollback-only database-role checks, 11/11 mocked-transport handler checks, 7/7 live endpoint denial/disabled-state checks, website build/typecheck and a 97-file/18-bundle secret scan. Fixtures were rolled back. These tests do not establish genuine OAuth, real Meta delivery, concurrent-worker stress behavior, or new WhatsApp mobile-browser QA; browser control remains unavailable.
 - Reviewed website source is committed as `db02c75` on `web`; shared backend/contract is on `main` and `ios` at `2c6efd1`. Initial website push did not create a Vercel deployment despite later shared-branch hooks arriving. A documentation push is being used as one bounded retry; no project recreation or credential change is needed. Deployed website confirmation remains pending.
+- Retry commit `4e712dd` created production deployment `dpl_9ZhE68qMTYzodYtitrZyPpWvn9w7`, but repeated bounded checks still report INITIALIZING without build logs. The previous website remains live; updated website HTTP smoke is not claimed. Backend installation/testing is complete independently of this pending website deployment.
 
 ### OAuth-only change — in progress, 2026-09-18
 
@@ -26,7 +27,7 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 - Implementation agent owns app/provider configuration and dedicated Google Cloud OAuth setup. A paid Google Workspace subscription is not required for this sign-in integration.
 - Separate testing and evaluation agents are checking the new flows; prior password-based results do not establish OAuth readiness. Existing identities/data must be preserved.
 - Apple Developer opened in Chrome and is signed out. User sign-in/2FA and access to an enrolled developer team are prerequisites; Team ID, enabled App ID, Services ID, and signing key must then be configured. No Apple provider success is claimed.
-- Dedicated Google Cloud project `halal-cart-nyc-2026` created using the base Chrome account. Consent setup prepared for Halal Cart with External audience. Required Google API Services User Data Policy agreement is unchecked, pending explicit action-time approval under computer-control rules; no OAuth client credential or working Google sign-in is claimed yet.
+- Dedicated Google Cloud project `halal-cart-nyc-2026` created using the base Chrome account. Consent setup prepared for Halal Cart with External audience. Initially paused at Google API Services User Data Policy acceptance; approval has since been received, but disconnected browser control prevents confirming the latest form state. No OAuth client credential or working Google sign-in is claimed yet.
 - User subsequently replied "done" and clarified "for google not for apple". Google setup resumed with that approval/completion signal; implementation agent is inspecting current browser state and connecting the dedicated client. Apple remains pending, with no new Apple action authorized by this reply.
 - New OAuth build/typecheck, eight focused callback/return-destination tests, and secret scan passed. Independent source review accepted after browser-back retry correction. These checks do not replace live provider round trips.
 - Browser OAuth dialog and guest/callback checks passed at 320/390/430 pixels. Hosted Email provider disabled and read back; new-user signup remains enabled, anonymous sign-in disabled, existing identities/data preserved. Google and Apple remain disabled until their setup is complete.
@@ -78,10 +79,11 @@ Website source and test tools live on `web`; `main` and `ios` contain the shared
 
 ## Next actions
 
-1. Obtain the pending Google policy/client approval, finish the prepared dedicated OAuth client, connect it to Supabase, and test a genuine production Google sign-in round trip.
+1. Restore the main Chrome computer-control connection, finish the approved dedicated Google OAuth setup, connect it to Supabase, and test a genuine production Google sign-in round trip. Google approval already exists; do not ask again for the same prepared setup.
 2. After user signs in to Apple Developer with an enrolled team, configure Apple identifiers/signing key and Supabase provider; test a genuine Apple sign-in. Store secrets privately and document rotation.
-3. Verify authenticated customer/owner journeys under OAuth, complete physical-phone location/keyboard checks where available, and grant website acceptance only with recorded evidence. Old password fixture credentials have been retired; existing hosted identities remain preserved.
-4. Begin Swift iOS after that gate using the shared backend/Auth contract. No iOS app is claimed complete. SMTP is no longer a release prerequisite for the removed email authentication flow.
+3. Inspect the base Facebook account once browser access returns, identify the dedicated business sender, configure Meta credentials/approved templates/webhook and run a deliberately opted-in real delivery/STOP test. Keep WhatsApp off until verified and complete new mobile UI QA.
+4. Verify authenticated customer/owner journeys under OAuth, complete physical-phone location/keyboard checks where available, and grant website acceptance only with recorded evidence. Old password fixture credentials have been retired; existing hosted identities remain preserved.
+5. Begin Swift iOS after that gate using the shared backend/Auth contract. No iOS app is claimed complete. SMTP is no longer a release prerequisite for the removed email authentication flow.
 
 ## Known constraints and open dependencies
 

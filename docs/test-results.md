@@ -4,6 +4,8 @@
 
 Backend migration `20260918200120` and both Edge Functions are installed in the dedicated hosted project with delivery **off**. New frontend source builds successfully; final deployment is coordinated separately. This verifies disabled installation and notification logic, not real Meta delivery or authenticated browser acceptance.
 
+Final deployment check: source `4e712dd0e8c7bdf63ef825d606ba0fea590d5426` (application change `db02c75`), deployment `dpl_9ZhE68qMTYzodYtitrZyPpWvn9w7`, remained **INITIALIZING** with no build logs at the bounded final monitor. The public alias still served the previous source: home/privacy/terms/callback returned HTTP 200, but privacy lacked the new WhatsApp disclosure. These responses are not a successful new-release smoke test. Repeat production checks after this deployment reaches READY and the new disclosure is present.
+
 - `npm run build` and `npm run typecheck`: pass on final WhatsApp source. OAuth regression tests: **8/8 unit** and **6/6 hosted** pass; Email, Google and Apple remain disabled.
 - `node --test tests/whatsapp.test.mjs`: **11/11 pass** executing actual TypeScript shared code and request handlers with mocked transport/environment. Covers raw-body HMAC tampering, business/phone binding, malformed events, minimal templates, unverified/withdrawn suppression, definitive throttling versus uncertain outcomes, three-job batch limit, webhook verification/auth and worker authentication. No real message sent.
 - `node tests/whatsapp-http.mjs`: **7/7 pass** on deployed hosted endpoints: missing/incorrect worker secret, unsupported methods, unsigned webhook and wrong verification token reject; public availability returns disabled with no business number.
