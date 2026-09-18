@@ -19,7 +19,7 @@ export default function CartMap({ carts, onSelect }: { carts: Cart[]; onSelect: 
     carts.forEach(cart => {
       if (cart.latitude === null || cart.longitude === null) return;
       const position: L.LatLngTuple = [cart.latitude, cart.longitude]; points.push(position);
-      const marker = L.marker(position, { icon: L.divIcon({ className: 'cart-marker', html: `<span class="${online(cart) ? 'live' : ''}">▣</span>`, iconSize: [36, 42], iconAnchor: [18, 40] }), title: cart.name, keyboard: true }).addTo(layer);
+      const marker = L.marker(position, { icon: L.divIcon({ className: 'cart-marker', html: `<span class="${online(cart) ? 'live' : ''}">▣</span>`, iconSize: [36, 42], iconAnchor: [18, 40] }), title: cart.name, keyboard: true, alt: `${cart.name} — ${online(cart) ? 'online' : 'offline'}` }).addTo(layer); marker.getElement()?.setAttribute('aria-label', `${cart.name} — ${online(cart) ? 'online' : 'offline'}`);
       const container = document.createElement('div'); const title = document.createElement('strong'); title.textContent = cart.name; container.append(title);
       const status = document.createElement('p'); status.textContent = online(cart) ? 'Online · accepting pickup orders' : 'Offline · last shared location'; container.append(status);
       const button = document.createElement('button'); button.textContent = 'View cart & menu'; button.onclick = () => selected.current(cart); container.append(button); marker.bindPopup(container);
