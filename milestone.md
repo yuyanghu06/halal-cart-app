@@ -10,6 +10,8 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 
 ### Browser setup resumed
 
+- Latest Apple retry reached the signed-in Developer account successfully. Implementation agent is checking identifier/key access and membership state before configuration; login success alone is not Apple OAuth completion. User confirmed a WhatsApp business sending number is still needed; WhatsApp remains off.
+- Apple account explicitly reports the personal Apple Developer Program membership has expired (renewal date August 26, 2026). User renewal is now the concrete Apple blocker. No payment, renewal, identifier creation, or signing-key creation was performed; no unrelated developer team was changed.
 - User requested another retry; main Chrome computer control is now working. Apple Developer sign-in was reopened and preserved as a handoff. Meta Business opened successfully but Facebook login is signed out; both accounts await user login/2FA. Google setup continues under the existing approval.
 - Pending Vercel deployment `dpl_9ZhE68qMTYzodYtitrZyPpWvn9w7` now reports READY for `4e712dd` (application `db02c75`). Tester observed the new WhatsApp privacy disclosure at the public origin and is completing final browser smoke. Earlier initialization blocker below is historical.
 - Final public-origin smoke passed: new privacy disclosure, four routes HTTP200, seven hosted disabled-state/endpoint checks, and actual Chrome guest/dialog QA at 320/390/430×844 with no overflow or application errors. Enabled WhatsApp checkout and real delivery remain untested.
@@ -21,8 +23,8 @@ The primary agent coordinates and evaluates. Separate agents implement, test, an
 
 - User requested WhatsApp Business API integration using the base Facebook account, optional customer WhatsApp numbers, and order notifications. Scope is transactional order updates, not marketing.
 - Primary coordinates a backend integration with explicit opt-in, private recipient data, recipient verification, server-held Meta credentials, queued order events, authenticated dispatch, signed delivery/opt-out webhooks, and honest disabled behavior until provider setup is complete. Implementation, testing, and evaluation remain separate.
-- Computer control currently reports no connected Chrome browser, preventing the requested Apple tab reopening and Google/Facebook dashboard setup. User was asked to reconnect main Chrome. Google approval persists; Apple sign-in has not been completed.
-- A business sending number is required; user was asked whether an existing Meta number or a dedicated new number is available. No personal saved number is assumed and no real WhatsApp messages have been sent.
+- Earlier computer-control disconnection is resolved; current Apple/Google status is recorded above. Facebook business login and WhatsApp sender setup remain separate dependencies.
+- User confirmed a business sending number is still needed. No personal saved number is assumed and no real WhatsApp messages have been sent.
 - Implemented source includes private per-order consent, number-bound verification challenges, order-confirmed/ready/cancelled event queue, signed Meta webhook and authenticated background worker, customer withdrawal/STOP, bounded retry and unknown-outcome handling, and privacy/retention documentation. Delivery stays off and checkout hides phone collection while unavailable.
 - Independent source review passed the disabled-install gate after fixes for exact retry during a feature toggle, verification-link recovery, large order lists, and worker scheduling. Hosted migration/deployment/tests are in progress; source approval is not evidence of real Meta delivery.
 - Hosted migration `20260918200120` and `whatsapp-worker`/`whatsapp-webhook` are installed. Availability is false, business number null, and worker Vault secret absent; maintenance cron runs without outbound dispatch. No Meta messages have been sent.
